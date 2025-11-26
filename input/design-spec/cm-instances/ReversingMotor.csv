@@ -1,0 +1,4 @@
+Name,#,Controller,Unit Instance,P&ID Drawing,Comment,forwardFeedback,reverseFeedback,fwdCommand,revCommand,id,hasFwdFeedback,hasRevFeedback,enableForward,enableReverse,safeHold,monitor,staticTimeout,dynamicTimeout,simulateDelay
+P4711,20,PLC-01,T4750,DEXPI_Example_C01,,,,,,,,,,,,,,,
+P4712,21,PLC-01,T4750,DEXPI_Example_C01,,,,,,,,,,,,,,,
+

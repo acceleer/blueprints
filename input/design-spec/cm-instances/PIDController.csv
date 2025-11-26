@@ -1,0 +1,4 @@
+Name,#,Controller,Unit Instance,P&ID Drawing,Comment,rawValue,id,valueUnit,manipulatedValueUnit,scaleMin,scaleMax,scaleMinMV,scaleMaxMV,proportional,integration,derivation,alarmHigh,warningHigh,toleranceHigh,toleranceLow,warningLow,alarmLow,alarmHighEn,warningHighEn,toleranceHighEn,toleranceLowEn,warningLowEn,alarmLowEn,deadband
+PICSA4712_02,18,PLC-01,T4750,DEXPI_Example_C01,,,,,,,,,,,,,,,,,,,,,,,,,
+TICSA4750_03,19,PLC-01,T4750,DEXPI_Example_C01,,,,,,,,,,,,,,,,,,,,,,,,,
+

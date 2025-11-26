@@ -1,0 +1,14 @@
+{
+    "cm-type-package": "./input/cm-type-packages/open-process-library-siemens-tia",
+    "design-spec": "./input/design-spec",
+    "targets": {
+        "siemens-tia": {
+            "enable": true,
+            "output-folder": "./output/siemens-tia",
+            "template-packages": [
+                "./input/teplate-packages/siemens-tia-cm",
+                "./input/teplate-packages/siemens-tia-main"
+            ]
+        }
+    }
+}

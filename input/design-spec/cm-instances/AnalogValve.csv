@@ -1,0 +1,4 @@
+Name,#,Controller,Unit Instance,P&ID Drawing,Comment,feedbackPosition,feedbackOpen,feedbackClose,positionOutDevice,id,scaleMin,scaleMax,hasFbOpen,hasFbClose,safeOpen,safeHold,simulateDelay
+PV4712_02,12,PLC-01,T4750,DEXPI_Example_C01,,,,,,,,,,,,,
+TV4750_03,14,PLC-01,T4750,DEXPI_Example_C01,,,,,,,,,,,,,
+
