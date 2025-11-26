@@ -1,0 +1,323 @@
+{{~
+    set_name(phase_type.name)
+    set_folder('PhaseTypes')
+~}}
+FUNCTION_BLOCK "{{phase_type.name}}"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+VAR_IN_OUT
+
+{{~## add all the control modules ##~}}
+{{~ for linked_control_module in phase_type.linked_control_modules ~}}
+    {{ linked_control_module.name }}: "{{ linked_control_module.cm_type_name }}"; // {{ linked_control_module.comment }}
+{{~end~}}
+
+{{~## add all the auto-generated inouts ##~}}
+{{~ for in_out in phase_type.in_outs ~}}
+   {{in_out.name}}{ ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: {{ in_out.data_type }};		// {{ in_out.single_line_comment }}
+{{~ end ~}}
+END_VAR
+
+VAR_INPUT
+
+{{~## add all the inputs from the phase type ##~}}
+{{~ for input in phase_type.inputs ~}}
+   {{input.name}}{ ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: {{ input.data_type }};		// {{ input.single_line_comment }}
+{{~ end ~}}
+END_VAR
+
+VAR_OUTPUT
+
+{{~## add all the auto-generated outputs ##~}}
+{{~ for output in phase_type.outputs ~}}
+	{{output.name}}{ ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: {{ output.data_type }};		// {{ output.single_line_comment }}
+{{~ end ~}}
+
+{{~ # add outputs for the auto-generated timers -}}
+{{~ for timer in phase_type.ordered_timer_definitions ~}}
+	{{ timer.name }} 	{ ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }:BOOL; // Timer output
+{{~ end ~}}
+END_VAR
+
+VAR
+
+    PhaseLogic { ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: "PhaseLogic"; // contains all the basic Phase logic and interfaces
+
+{{~## add all the recipe parameters ##~}}
+{{~ for recipe_parameter in phase_type.recipe_parameters~}}
+	{{ recipe_parameter.name }} { ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: {{ recipe_parameter.data_type }}; // {{ recipe_parameter.single_line_comment }}
+{{~ end ~}}
+
+{{~## add all the report parameters ##~}}
+{{~ for report_parameter in phase_type.report_parameters~}}
+	{{ report_parameter.name }} { ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: {{ report_parameter.data_type }}; // {{ report_parameter.single_line_comment }}
+{{~ end ~}}
+
+{{~## add all the auto-generated hmi parameters ##~}}
+{{~ for hmi_parameter in phase_type.hmi_parameters~}}
+   {{ hmi_parameter.name }}{ ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: {{ hmi_parameter.data_type }};		// {{ hmi_parameter.single_line_comment }}
+{{~ end ~}}
+
+{{~## add all the auto-generated internals(stats in Siemens) ##~}}
+{{~ for stat in phase_type.internals ~}}
+   {{stat.name}}{ ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: {{ stat .data_type }};		// {{ stat.single_line_comment }}
+{{~ end ~}}
+
+{{~ for item in phase_type.ordered_timer_definitions ~}}
+    {{~ if item.type == "Pulsing" ~}}
+	// Pulsing timers are built with two TON timers
+	Timer_{{ item.name }}_A { ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: IEC_TIMER; // timer for the delays in the steps
+	Timer_{{ item.name }}_B { ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: IEC_TIMER; // timer for the delays in the steps
+    {{~ else ~}}
+	// Non-Pulsing timers need one timer
+	Timer_{{ item.name }} { ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: IEC_TIMER; // timer for the delays in the steps
+    {{~ end ~}}
+{{~end~}}
+{{~ for timer_no in (1..phase_type.used_step_timer_count) ~}}
+	StepTimer_{{timer_no}}{ ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: IEC_TIMER; // timer for the delays in the steps
+{{~end~}}
+{{~ for timer_no in (1..phase_type.used_phase_timer_count) ~}}
+	PhaseTimer_{{timer_no}}{ ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: IEC_TIMER; // timer for delays/timers at phase level
+{{~end~}}
+END_VAR
+
+VAR_TEMP
+
+    dummy_b{ ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: Bool;		// Boolean dummy
+    dummy_t{ ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'True' }: Time;		// Time dummy
+END_VAR
+
+BEGIN
+
+PhaseLogic(
+    firstIdleStep:= {{ phase_type.first_idle_step }},
+    firstHoldingStep:= {{ phase_type.first_holding_step }},
+    firstAbortingStep:= {{ phase_type.first_aborting_step }},
+    firstPausingStep:= {{ phase_type.first_pausing_step }},
+    firstRestartingStep:= {{ phase_type.first_restarting_step }},
+    firstExecuteStep:= {{ phase_type.first_execute_step }},
+    firstResumingStep:= {{ phase_type.first_resuming_step }},
+    firstUnholdingStep:= {{ phase_type.first_unholding_step }},
+    firstCompletingStep:= {{ phase_type.first_completing_step }},
+    firstResettingStep:= {{ phase_type.first_resetting_step }},
+    firstStartingStep:= {{ phase_type.first_starting_step }},
+    firstStoppingStep:= {{ phase_type.first_stopping_step }}
+);
+
+REGION Timer Definitions
+
+{{~ for timer_definition in phase_type.ordered_timer_definitions ~}}
+	// TIMER: {{ timer_definition.name }}
+	// Timer type: {{ timer_definition.type }}
+	// Condition: {{ timer_definition.conditions }}
+{{~ if timer_definition.type != "Pulsing" ~}}
+	// Time setting: {{ timer_definition.time_1 }}
+{{~ else ~}}
+	// Time setting ON: {{ timer_definition.time_1 }}
+	// Time setting OFF: {{ timer_definition.time_2 }}
+	//
+	// The pulse timer is created with two IEC timers: TIMER_A and TIMER_B
+	//
+	// TIMER_A.Q will have a single-scan positive pulse each time_on + time_off.
+	//
+	// TIMER_B.Q will be off during time_on and on during time_off
+	// When TIMER_B is not running (Condition is false), TIMER_B will be off
+	// TIMER_B will be true immediately after Condition is true
+{{~ end ~}}
+{{~ if timer_definition.type == "Pulsing" ~}}
+	Timer_{{ timer_definition.name }}_A.TON(
+		IN := {{ tia_convert_condition(timer_definition.condition_code) }} AND NOT Timer_{{ timer_definition.name }}_A.Q,
+		PT := T#1ms * REAL_TO_DINT({{ timer_definition.time_setting_1 }} * {{ timer_definition.time_multiplier_1 }} + {{ timer_definition.time_setting_2 }} * {{ timer_definition.time_multiplier_2 }}),
+		Q => dummy_b,
+		ET => dummy_t
+	);
+	Timer_{{ timer_definition.name }}_B.TON(
+		IN := {{ tia_convert_condition(timer_definition.condition_code) }} AND NOT Timer_{{ timer_definition.name }}_A.Q,
+		PT := T#1ms * REAL_TO_DINT({{ timer_definition.time_setting_1 }} * {{ timer_definition.time_multiplier_1 }}),
+		Q => dummy_b,
+		ET => dummy_t
+	);
+	{{ timer_definition.name }} := False;
+	IF NOT Timer_{{ timer_definition.name }}_A.Q AND NOT Timer_{{ timer_definition.name }}_B.Q THEN
+		{{ timer_definition.name }} := True;
+	END_IF;
+
+{{~ else if timer_definition.type == "On-Delay" ~}}
+	Timer_{{ timer_definition.name }}.TON(
+		IN := {{ tia_convert_condition(timer_definition.condition_code) }},
+		PT := T#1ms * REAL_TO_DINT({{ timer_definition.time_setting_1 }} * {{ timer_definition.time_multiplier_1 }}),
+		Q => dummy_b,
+		ET => dummy_t
+	);
+	{{ timer_definition.name }} := Timer_{{ timer_definition.name }}.Q;
+
+{{~ else if timer_definition.type == "Off-Delay" ~}}
+	Timer_{{ timer_definition.name }}.TON(
+		IN := NOT ( {{ tia_convert_condition(timer_definition.condition_code) }} ),
+		PT := T#1ms * REAL_TO_DINT({{ timer_definition.time_setting_1 }} * {{ timer_definition.time_multiplier_1 }}),
+		Q => dummy_b,
+		ET => dummy_t
+	);
+	{{ timer_definition.name }} := Timer_{{ timer_definition.name }}.Q;
+
+{{~ else ~}}
+	%%unexisting_timer_type%%
+{{~ end ~}}
+{{~ end ~}}
+
+END_REGION
+
+
+REGION Cyclic Actions
+{{~ for cyclic_action in phase_type.ordered_cyclic_actions ~}}
+	//CYCLIC ACTION - {{ cyclic_action.comment }}
+	// {{ cyclic_action.design }}
+	{{~ for action_object in cyclic_action.code ~}}
+		{{~ if action_object.condition == "" ~}}
+		{{ tia_convert_action(action_object.action) }};
+		{{~ else ~}}
+			{{~ if action_object.has_delay ~}}
+		PhaseTimer_{{ action_object.delay_timer_no }}.TON(
+			IN := {{ tia_convert_condition(action_object.condition) }},
+			PT := T#1ms * REAL_TO_DINT({{ action_object.delay_timer_setting }} * {{ action_object.delay_multiplier }}),
+			Q => dummy_b,
+			ET => dummy_t
+		);
+		IF (PhaseTimer_{{ action_object.delay_timer_no }}.Q) THEN
+			{{ tia_convert_action(action_object.action) }};
+		END_IF;
+			{{~ else ~}}
+		IF ({{ tia_convert_condition(action_object.condition) }}) THEN // {{action_object.condition}}
+			{{ tia_convert_action(action_object.action) }};
+		END_IF;
+			{{~ end ~}}
+		{{~ end ~}}
+	{{~ end ~}}
+
+{{~ end ~}}
+END_REGION
+
+
+REGION START & HOLD CONDITIONS
+{{~ sh_condition_counter = 1 ~}}
+{{~
+    # loop over all the start and hold conditions
+    for shcondition in phase_type.ordered_start_hold_conditions
+~}}
+    // {{ shcondition.comment }}
+	// {{ shcondition.conditions }}
+    {{~ if shcondition.condition_code.delay == '' ~}}
+    PhaseLogic.startHoldConditions.%X{{ sh_condition_counter}} := {{ tia_convert_condition(shcondition.condition_code) }};
+    {{~ else ~}}
+    PhaseTimer_{{ shcondition.condition_code.delay_timer_no }}.TON(
+        IN := {{ tia_convert_condition(shcondition.condition_code) }},
+        PT := T#{{ shcondition.condition_code.delay_timer_setting }}s,
+        Q => PhaseLogic.startHoldConditions.%X{{ sh_condition_counter}},
+        ET => dummy_t
+    );
+    {{~ end ~}}
+    {{~ if shcondition.is_start_condition ~}}
+    PhaseLogic.startConditions.%X{{ sh_condition_counter }} := PhaseLogic.startHoldConditions.%X{{ sh_condition_counter }};
+    {{~ end ~}}
+    {{~ if shcondition.is_hold_condition ~}}
+    IF (
+        PhaseLogic.startHoldConditions.%X{{ sh_condition_counter }}
+        {{~ if shcondition.step_ranges.size > 0 ~}}
+        AND {{ if shcondition.step_ranges.size > 1 }}({{end ~}}
+            {{~ for range in shcondition.step_ranges ~}}
+                {{~ if range.low != range.high ~}}
+            {{ if !for.first }}OR {{ end }}({{ range.low }} <= PhaseLogic.stepnumber AND PhaseLogic.stepnumber <= {{ range.high }})
+                {{~ else ~}}
+            {{ if !for.first }}OR {{ end }}PhaseLogic.stepnumber = {{ range.low }}
+                {{~ end ~}}
+            {{~ end ~}}
+        {{ if shcondition.step_ranges.size > 1 }}){{end ~}}
+        {{~ end ~}}
+    ) THEN
+        PhaseLogic.holdConditions.%X{{ sh_condition_counter }} := True;
+    END_IF;
+    {{~ end ~}}
+    {{~ sh_condition_counter = sh_condition_counter + 1 ~}}
+{{~ end ~}}
+END_REGION
+
+
+REGION STEPS
+
+{{~ # loop over all the sequences ~}}
+{{~ for sequence_name in ['Idle', 'Starting', 'Execute', 'Pausing', 'Paused', 'Resuming', 'Completing', 'Completed', 'Holding', 'Held', 'Unholding', 'Stopping', 'Stopped', 'Aborting', 'Aborted', 'Resetting'] ~}}
+	{{~ # get the sequence ~}}
+	{{~ sequence = phase_type.sequences_by_name[sequence_name] ~}}
+	{{~ # only if sequence is not null ~}}
+	{{~ if sequence ~}}
+		{{~ # loop over all the steps~}}
+		{{~ for step in sequence.ordered_steps ~}}
+
+	REGION Sequence {{sequence.name }} - S{{step.name}}
+	//================================
+	{{ comment_all_lines(step.comment) }}
+	//--------------------------------
+	{{ comment_all_lines(step.actions) }}
+	//================================
+
+		// only execute this step if stepnumber is {{ step.name }}
+		IF #PhaseLogic.stepnumber = {{ step.name }} THEN
+
+            //---------------------------------
+            // Actions (continuous)
+            //---------------------------------
+        {{~ for action in step.continuous_actions ~}}
+            {{~ if action.condition == "" ~}}
+                {{ tia_convert_action(action) }};
+            {{~ else ~}}
+              {{~ if action.has_delay ~}}
+                StepTimer_{{ action.delay_timer_no }}.TON(
+                    IN := {{ tia_convert_condition(action.condition) }},
+                    PT := T#1ms * REAL_TO_DINT({{ action.delay_timer_setting }} * {{ action.delay_multiplier }}),
+                    Q => dummy_b,
+                    ET => dummy_t
+                );
+                IF (StepTimer_{{ action.delay_timer_no }}.Q) THEN
+                    {{ tia_convert_action(action) }};
+                END_IF;
+              {{~ else ~}}
+                IF ({{ tia_convert_condition(action.condition) }}) THEN
+                    {{ tia_convert_action(action) }};
+                END_IF;
+              {{~ end ~}}
+            {{~ end ~}}
+        {{~ end ~}}
+
+        {{~ for transition in step.ordered_transitions ~}}
+            //---------------------------------
+            {{~ if transition.target == 'ResumeStep' ~}}
+            //--- TRANSITION TO ResumeStep ----
+            {{~ else ~}}
+            //--- TRANSITION TO S{{ transition.target }} ---
+            {{~ end ~}}
+            //---------------------------------
+            IF (
+                {{ tia_convert_condition(transition.condition_code) }} // {{ transition.condition_code }}
+            ) THEN
+                #PhaseLogic.stepnumber := {{ transition.target }};
+                #PhaseLogic.state := {{ transition.target_sequence_state }}; // {{ transition.target_sequence_name }}
+            END_IF;
+
+			{{~ end # for loop of transitions ~}}
+
+		Goto End;
+		// end of step
+		END_IF;
+
+	END_REGION
+		{{~ end # for loop of steps ~}}
+	{{~ end # if sequence exists ~}}
+{{~ end # for loop of sequences ~}}
+
+// every step needs to jump to End
+End: ;
+
+END_REGION
+
+END_FUNCTION_BLOCK

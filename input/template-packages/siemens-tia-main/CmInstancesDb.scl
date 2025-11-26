@@ -1,0 +1,15 @@
+{{~
+    set_name('CM_Instances_' + cm_type.name)
+    set_folder('CM_Instances')
+~}}
+
+DATA_BLOCK "CM_Instances_{{cm_type.name}}"
+{ S7_Optimized_Access := 'FALSE' }
+VERSION : 0.1
+NON_RETAIN
+"Call_CMs_{{ cm_type.name }}"
+
+BEGIN
+
+
+END_DATA_BLOCK

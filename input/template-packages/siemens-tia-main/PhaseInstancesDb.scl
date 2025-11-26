@@ -1,0 +1,15 @@
+{{~
+    set_name('PhaseInstances')
+    set_folder('PhaseInstances')
+~}}
+
+DATA_BLOCK "PhaseInstances"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+"Call_PhaseInstances"
+
+BEGIN
+
+
+END_DATA_BLOCK

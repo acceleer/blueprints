@@ -1,0 +1,142 @@
+{{~
+    set_name('AnalogMeasurement')
+    set_folder('_generated/CMTypes')
+~}}
+// ==============================================================================
+// AnalogMeasurement - Function Block
+// ==============================================================================
+// Generated from Open Process Library specification
+// Template: Siemens-TIA-full (SCL for S7-1200/1500)
+// ==============================================================================
+
+FUNCTION_BLOCK "AnalogMeasurement"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   // Flattened implementation including AnaMon interface
+   // ===========================================================================
+   // MTP Interface Variables (from AnaMon)
+   // ===========================================================================
+   VAR_INPUT
+      #WQC : BYTE; // Worst Quality Code Variable
+      #OSLevel : BYTE; // manual operation permission. 0 = only on-site. >0: only from POL
+      #V : REAL; // Value
+      #VSclMin : REAL; // Value Scale Low Limit
+      #VSclMax : REAL; // Value Scale High Limit
+      #VUnit : INT; // Value Unit
+      #VAHEn : BOOL; // 1: Alarm High Limit Enabled
+      #VWHEn : BOOL; // 1: Warning High Limit Enabled
+      #VTHEn : BOOL; // 1: Tolerance High Limit Enabled
+      #VTLEn : BOOL; // 1: Tolerance Low Limit Enabled
+      #VWLEn : BOOL; // 1: Warning Low Limit Enabled
+      #VALEn : BOOL; // 1: Alarm Low Limit Enabled
+   END_VAR
+   VAR_OUTPUT
+      #VAHAct : BOOL; // 1: Alarm High Limit Active
+      #VWHAct : BOOL; // 1: Warning High Limit Active
+      #VTHAct : BOOL; // 1: Tolerance High Limit Active
+      #VTLAct : BOOL; // 1: Tolerance Low Limit Active
+      #VWLAct : BOOL; // 1: Warning Low Limit Active
+      #VALAct : BOOL; // 1: Alarm Low Limit Active
+   END_VAR
+
+   // ===========================================================================
+   // Extended Variables (OPL additions)
+   // ===========================================================================
+   VAR_INPUT
+      #id : INT; // unique project-wide ID to uniquely identify and track objects
+      #rawValue : WORD; // Raw Input Value
+      #valueUnit : INT; // Value Unit
+      #scaleMin : REAL := 0.0; // Scale Min Limit
+      #scaleMax : REAL := 100.0; // Scale Max Limit
+      #alarmHigh : REAL := 90.0; // Limit Value for Alarm High (not accessible in Beckhoff MTP)
+      #warningHigh : REAL := 80.0; // Limit Value for Warning High (not accessible in Beckhoff MTP)
+      #toleranceHigh : REAL := 60.0; // Limit Value for Tolerance High (not accessible in Beckhoff MTP)
+      #toleranceLow : REAL := 40.0; // Limit Value for Tolerance Low (not accessible in Beckhoff MTP)
+      #warningLow : REAL := 20.0; // Limit Value for Warning Low (not accessible in Beckhoff MTP)
+      #alarmLow : REAL := 10.0; // Limit Value for Alarm Low (not accessible in Beckhoff MTP)
+      #alarmHighEn : BOOL := TRUE; // Alarm High Limit Enabled
+      #warningHighEn : BOOL := TRUE; // Warning High Limit Enabled
+      #toleranceHighEn : BOOL := TRUE; // Tolerance High Limit Enabled
+      #toleranceLowEn : BOOL := TRUE; // Tolerance Low Limit Enabled
+      #warningLowEn : BOOL := TRUE; // Warning Low Limit Enabled
+      #alarmLowEn : BOOL := TRUE; // Alarm Low Limit Enabled
+      #deadband : REAL; // Deadband for alarms/warnings
+      #externalFault : BOOL; // Fault indication from outside
+   END_VAR
+   VAR_OUTPUT
+      #vOut : REAL; // Value
+      #error : BOOL; // Any error active
+      #alarmHighStatus : BOOL; // Alarm High Limit Active
+      #warningHighStatus : BOOL; // Warning High Limit Active
+      #toleranceHighStatus : BOOL; // Tolerance High Limit Active
+      #toleranceLowStatus : BOOL; // Tolerance Low Limit Active
+      #warningLowStatus : BOOL; // Warning Low Limit Active
+      #alarmLowStatus : BOOL; // Alarm Low Limit Active
+   END_VAR
+
+   VAR
+      // Control Variables
+      #first_scan : BOOL := TRUE;
+      #second_scan : BOOL := FALSE;
+      // Local Variables (MTP)
+      #VAHLim : REAL; // Limit Value for Alarm High
+      #VWHLim : REAL; // Limit Value for Warning High
+      #VTHLim : REAL; // Limit Value for Tolerance High
+      #VTLLim : REAL; // Limit Value for Tolerance Low
+      #VWLLim : REAL; // Limit Value for Warning Low
+      #VALLim : REAL; // Limit Value for Alarm Low
+      #VAHLimLast : REAL;
+      #VWHLimLast : REAL;
+      #VTHLimLast : REAL;
+      #VTLLimLast : REAL;
+      #VWLLimLast : REAL;
+      #VALLimLast : REAL;
+   END_VAR
+
+BEGIN
+   // ===========================================================================
+   // STARTUP - SECOND SCAN
+   // ===========================================================================
+   IF second_scan THEN
+      // end second scan
+      second_scan := FALSE;
+   END_IF;
+
+   // ===========================================================================
+   // STARTUP - FIRST SCAN
+   // ===========================================================================
+   IF first_scan THEN
+      // prepare second scan
+      first_scan := FALSE;
+      second_scan := TRUE;
+   END_IF;
+   // ===========================================================================
+   // MTP Interface Functionality (from AnaMon)
+   // ===========================================================================
+
+   VAHAct := vOut >= alarmHigh;
+   VWHAct := vOut >= warningHigh;
+   VTHAct := vOut >= toleranceHigh;
+   VTLAct := vOut <= toleranceLow;
+   VWLAct := vOut <= warningLow;
+   VALAct := vOut <= alarmLow;
+
+   // ===========================================================================
+   // Extended Functionality (OPL additions)
+   // ===========================================================================
+
+   #WQC := 16#FF;
+   #OSLevel := 16#00;
+   #V := VSclMin + (WORD_TO_DINT(rawValue) / 27648.0) * (VSclMax - VSclMin);
+   #vOut := V;
+   #VSclMin := scaleMin;
+   #VSclMax := scaleMax;
+   #VUnit := valueUnit;
+   #VAHEn := alarmHighEn;
+   #VWHEn := warningHighEn;
+   #VTHEn := toleranceHighEn;
+   #VTLEn := toleranceLowEn;
+   #VWLEn := warningLowEn;
+   #VALEn := alarmLowEn;
+
+END_FUNCTION_BLOCK

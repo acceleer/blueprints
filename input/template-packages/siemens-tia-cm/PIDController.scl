@@ -1,0 +1,204 @@
+{{~
+    set_name('PIDController')
+    set_folder('_generated/CMTypes')
+~}}
+// ==============================================================================
+// PIDController - Function Block
+// ==============================================================================
+// Generated from Open Process Library specification
+// Template: Siemens-TIA-full (SCL for S7-1200/1500)
+// ==============================================================================
+
+FUNCTION_BLOCK "PIDController"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   // Flattened implementation including PIDCtrl interface
+   // ===========================================================================
+   // MTP Interface Variables (from PIDCtrl)
+   // ===========================================================================
+   VAR_INPUT
+      #StateChannel : BOOL; // OperationMode selection. 0: operator (..Op), 1: automatic (..Aut)
+      #StateOffAut : BOOL; // Switch Operation Mode to 'Offline' in automatic mode
+      #StateOpAut : BOOL; // Switch Operation Mode to 'Operator' in automatic mode
+      #StateAutAut : BOOL; // Switch Operation Mode to 'Automatic' in automatic mode
+      #SrcChannel : BOOL; // SourceMode selection. 0: operator (..Op), 1: automatic (..Aut)
+      #SrcManAut : BOOL; // Switch Source Mode to 'Manual' in automatic mode
+      #SrcIntAut : BOOL; // Switch Source Mode to 'Internal' in automatic mode
+      #WQC : BYTE; // Worst Quality Code Variable
+      #OSLevel : BYTE; // manual operation permission. 0 = only on-site. >0: only from POL
+      #PV : REAL; // Process Value
+      #PVSclMin : REAL; // Process Value Scale Low Limit
+      #PVSclMax : REAL; // Process Value Scale High Limit
+      #PVUnit : INT; // Process Value Unit
+      #SPInt : REAL; // Internal Setpoint
+      #SPSclMin : REAL; // Setpoint Scale Low Limit
+      #SPSclMax : REAL; // Setpoint Scale High Limit
+      #SPUnit : INT; // Setpoint Unit
+      #SPIntMin : REAL; // Internal Setpoint Low Limit
+      #SPIntMax : REAL; // Internal Setpoint High Limit
+      #SPManMin : REAL; // Manual Setpoint Low Limit
+      #SPManMax : REAL; // Manual Setpoint High Limit
+      #MVMin : REAL; // Minimal Manipulated Value
+      #MVMax : REAL; // Maximal Manipulated Value
+      #MVUnit : INT; // Manipulated Value Unit
+      #MVSclMin : REAL; // Manipulated Value Scale Low Limit
+      #MVSclMax : REAL; // Manipulated Value Scale High Limit
+      #P : REAL; // Proportional Parameter
+      #Ti : REAL; // Integration Parameter in s
+      #Td : REAL; // Derivation Parameter in s
+   END_VAR
+   VAR_OUTPUT
+      #StateOpAct : BOOL; // Operator state active
+      #StateAutAct : BOOL; // Automatic state active
+      #StateOffAct : BOOL; // Offline state active
+      #SrcIntAct : BOOL; // Internal mode active
+      #SrcManAct : BOOL; // Manual mode active
+      #SP : REAL; // Setpoint
+      #MV : REAL; // Manipulated Value
+   END_VAR
+
+   // ===========================================================================
+   // Extended Variables (OPL additions)
+   // ===========================================================================
+   VAR_INPUT
+      #id : INT; // unique project-wide ID to uniquely identify and track objects
+      #activateManualSP : BOOL; // Activates Fixed Manual Setpoint (Activation by Program)
+      #activateDynamicSP : BOOL; // Activates Internal Dynamic Setpoint (Activation by Program)
+      #activateFixedSP : BOOL; // Activates Internal Fixed Setpoint (Activation by Program)
+      #dynamicSP : REAL; // Dynamic Setpoint from Program (for example from cascade PID controller)
+      #fixedSP : REAL; // Fixed Setpoint from Program (for example from a Phase/Sequence control)
+      #rawValue : WORD; // Raw Input Value
+      #valueUnit : INT; // Value Unit
+      #manipulatedValueUnit : INT; // Manipulated Value Unit
+      #scaleMin : REAL := 0.0; // Scale Min for read value
+      #scaleMax : REAL := 100.0; // Scale Max for read value
+      #scaleMinMV : REAL := 0.0; // Scale Min for Manipulated Value
+      #scaleMaxMV : REAL := 100.0; // Scale Max for Manipulated Value
+      #proportional : REAL := 1.0; // Proportional Parameter
+      #integration : REAL := 0.1; // Integration Parameter in s
+      #derivation : REAL := 0.0; // Derivation Parameter in s
+      #alarmHigh : REAL; // Limit Value for Alarm High
+      #warningHigh : REAL; // Limit Value for Warning High
+      #toleranceHigh : REAL; // Limit Value for Tolerance High
+      #toleranceLow : REAL; // Limit Value for Tolerance Low
+      #warningLow : REAL; // Limit Value for Warning Low
+      #alarmLow : REAL; // Limit Value for Alarm Low
+      #alarmHighEn : BOOL; // Alarm High Limit Enabled
+      #warningHighEn : BOOL; // Warning High Limit Enabled
+      #toleranceHighEn : BOOL; // Tolerance High Limit Enabled
+      #toleranceLowEn : BOOL; // Tolerance Low Limit Enabled
+      #warningLowEn : BOOL; // Warning Low Limit Enabled
+      #alarmLowEn : BOOL; // Alarm Low Limit Enabled
+      #deadband : REAL; // Deadband for alarms/warnings
+      #externalFault : BOOL; // Fault indication from outside
+   END_VAR
+   VAR_OUTPUT
+      #setpointOut : REAL; // Active setpoint
+      #valueOut : REAL; // input Value for use in the program
+      #manipulatedValue : REAL; // manipulated value
+      #remote : BOOL; // 0: operator/local, 1: automatic/remote
+      #operatorMode : BOOL; // Operator Mode
+      #automaticMode : BOOL; // Automatic Mode
+      #offlineMode : BOOL; // Offline Mode
+      #error : BOOL; // Any error active
+      #alarmHighStatus : BOOL; // Alarm High Limit Active
+      #warningHighStatus : BOOL; // Warning High Limit Active
+      #toleranceHighStatus : BOOL; // Tolerance High Limit Active
+      #toleranceLowStatus : BOOL; // Tolerance Low Limit Active
+      #warningLowStatus : BOOL; // Warning Low Limit Active
+      #alarmLowStatus : BOOL; // Alarm Low Limit Active
+      #programSelectsSP : BOOL;
+      #operatorSelectsSP : BOOL;
+      #manualSPAct : BOOL;
+      #internalSPAct : BOOL;
+      #dynamicSPAct : BOOL; // Will be active on startup
+      #fixedSPAct : BOOL;
+   END_VAR
+
+   VAR
+      // Control Variables
+      #first_scan : BOOL := TRUE;
+      #second_scan : BOOL := FALSE;
+      // Local Variables (MTP)
+      #StateOffOp : BOOL; // Switch Operation Mode to 'Off' by operator
+      #StateOpOp : BOOL; // Switch Operation Mode to 'Operator' by operator
+      #StateAutOp : BOOL; // Switch Operation Mode to 'Automatic' by operator
+      #SrcIntOp : BOOL; // Switch Source Mode to 'Internal' by operator
+      #SrcManOp : BOOL; // Switch Source Mode to 'Manual' by operator
+      #SPMan : REAL; // Manual Setpoint
+      #MVMan : REAL; // Manipulated Value from Operator
+      #PLast : REAL;
+      #TiLast : REAL;
+      #TdLast : REAL;
+   END_VAR
+
+BEGIN
+   // ===========================================================================
+   // STARTUP - SECOND SCAN
+   // ===========================================================================
+   IF second_scan THEN
+      // end second scan
+      second_scan := FALSE;
+   END_IF;
+
+   // ===========================================================================
+   // STARTUP - FIRST SCAN
+   // ===========================================================================
+   IF first_scan THEN
+      // prepare second scan
+      first_scan := FALSE;
+      second_scan := TRUE;
+   END_IF;
+   // ===========================================================================
+   // MTP Interface Functionality (from PIDCtrl)
+   // ===========================================================================
+
+
+   // ===========================================================================
+   // Extended Functionality (OPL additions)
+   // ===========================================================================
+
+   #WQC := 16#FF;
+   #OSLevel := 16#00;
+   #remote := StateChannel;
+   #operatorMode := StateOpAct;
+   #automaticMode := StateAutAct;
+   #offlineMode := StateOffAct;
+   #programSelectsSP := SrcChannel;
+   #operatorSelectsSP := NOT  SrcChannel;
+   #internalSPAct := SrcIntAct;
+   #manualSPAct := SrcManAct;
+   #SrcManAut := activateManualSP;
+   #SrcIntAut := activateDynamicSP  OR  activateFixedSP;
+   IF activateFixedSP THEN
+      #fixedSPAct := TRUE;
+   END_IF;
+   IF activateDynamicSP THEN
+      #fixedSPAct := FALSE;
+   END_IF;
+   #dynamicSPAct := NOT  fixedSPAct;
+   #PV := scaleMin + (WORD_TO_DINT(rawValue) / 27648.0) * (scaleMax - scaleMin);
+   #valueOut := PV;
+   #PVSclMin := scaleMin;
+   #PVSclMax := scaleMax;
+   #PVUnit := valueUnit;
+   #SPInt := (dynamicSP * INT_TO_REAL(BOOL_TO_INT(dynamicSPAct))) + (fixedSP * INT_TO_REAL(BOOL_TO_INT(fixedSPAct)));
+   #SPSclMin := scaleMin;
+   #SPSclMax := scaleMax;
+   #SPUnit := valueUnit;
+   #SPIntMin := scaleMin;
+   #SPIntMax := scaleMax;
+   #SPManMin := scaleMin;
+   #SPManMax := scaleMax;
+   #setpointOut := SP;
+   #manipulatedValue := MV;
+   #MVMin := scaleMinMV;
+   #MVMax := scaleMaxMV;
+   #MVUnit := manipulatedValueUnit;
+   #MVSclMin := scaleMinMV;
+   #MVSclMax := scaleMaxMV;
+   #activateManualSP := FALSE;
+   #activateDynamicSP := FALSE;
+   #activateFixedSP := FALSE;
+
+END_FUNCTION_BLOCK

@@ -1,0 +1,50 @@
+{{~
+    set_name('Call_CMs_' + cm_type.name)
+    set_folder('CM_Instances')
+~}}
+
+FUNCTION_BLOCK "Call_CMs_{{ cm_type.name }}"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+
+VAR_INPUT
+END_VAR
+
+
+VAR_OUTPUT
+END_VAR
+
+
+VAR
+{{~# loop over all CMInstances in the CMType #~}}
+{{~# add _ because can not start with number, and sometimes a tag starts with a number, like 20XV003 #~}}
+{{~# for the DMC library: each time add a variable for the HMI interface #~}}
+{{~ for cm_instance in cm_instances ~}}
+	"_{{ cm_instance.name }}" : "{{ cm_type.name }}"; // {{ cm_instance.comment }}
+{{~ end ~}}
+
+END_VAR
+
+VAR_TEMP
+END_VAR
+
+BEGIN
+
+REGION Call Modules
+
+{{~ for cm_instance in cm_instances ~}}
+	REGION {{ cm_instance.name }}
+
+		#"_{{ cm_instance.name }}" (
+	{{~ for link in cm_instance.block_links ~}}
+			{{ link.connection_left }} := {{ if !link.is_value }}"{{ end }}{{ link.connection_right }}{{ if !link.is_value }}"{{ end }}{{ if !for.last }},{{ end }}
+	{{~ end ~}}
+		);
+
+	END_REGION
+{{~ end ~}}
+
+END_REGION
+
+END_FUNCTION_BLOCK

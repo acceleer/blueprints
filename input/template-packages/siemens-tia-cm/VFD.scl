@@ -1,0 +1,223 @@
+{{~
+    set_name('VFD')
+    set_folder('_generated/CMTypes')
+~}}
+// ==============================================================================
+// VFD - Function Block
+// ==============================================================================
+// Generated from Open Process Library specification
+// Template: Siemens-TIA-full (SCL for S7-1200/1500)
+// ==============================================================================
+
+FUNCTION_BLOCK "VFD"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   // Flattened implementation including MonAnaDrv interface
+   // ===========================================================================
+   // MTP Interface Variables (from MonAnaDrv)
+   // ===========================================================================
+   VAR_INPUT
+      #StateChannel : BOOL; // OperationMode selection. 0: operator (..Op), 1: automatic (..Aut)
+      #StateOffAut : BOOL; // Switch Operation Mode to 'Offline' in automatic mode
+      #StateOpAut : BOOL; // Switch Operation Mode to 'Operator' in automatic mode
+      #StateAutAut : BOOL; // Switch Operation Mode to 'Automatic' in automatic mode
+      #SrcChannel : BOOL; // SourceMode selection. 0: operator (..Op), 1: automatic (..Aut)
+      #SrcManAut : BOOL; // Switch Source Mode to 'Manual' in automatic mode
+      #SrcIntAut : BOOL; // Switch Source Mode to 'Internal' in automatic mode
+      #PermEn : BOOL; // Enables the Permission Lock. 1 = enabled (info for HMI)
+      #Permit : BOOL; // Permit, allows control. Does not activate safe position. 1 = permission given
+      #IntlEn : BOOL; // Enables the Interlock Lock. 1 = enabled (info for HMI)
+      #Interlock : BOOL; // Interlock, sets safe position. 0 = interlock active
+      #ProtEn : BOOL; // Enables the Protection Lock. 1 = enabled (info for HMI)
+      #Protect : BOOL; // Protect, sets safe position, sets protectState. 0 = Protect active
+      #WQC : BYTE; // Worst Quality Code Variable
+      #OSLevel : BYTE; // manual operation permission. 0 = only on-site. >0: only from POL
+      #SafePos : BOOL; // Safe Position. 0: close, 1: running
+      #FwdEn : BOOL; // Forward enable
+      #RevEn : BOOL; // Reverse enable
+      #StopAut : BOOL; // Open command from controller program
+      #FwdAut : BOOL; // Forward command from controller program
+      #RevAut : BOOL; // Reverse command from controller program
+      #RpmSclMin : REAL; // RPM Setpoint Scale Low Limit
+      #RpmSclMax : REAL; // RPM Setpoint Scale High Limit
+      #RpmUnit : INT; // RPM Setpoint Unit
+      #RpmMin : REAL; // RPM Setpoint Low Limit
+      #RpmMax : REAL; // RPM Setpoint High Limit
+      #RpmInt : REAL; // RPM Internal Setpoint
+      #RevFbkCalc : BOOL; // Reverse feedback is Calculated
+      #RevFbk : BOOL; // Reverse feedback from the hardware
+      #FwdFbkCalc : BOOL; // Forward feedback is calculated
+      #FwdFbk : BOOL; // Forward feedback from the hardware
+      #RpmFbkCalc : BOOL; // RPM Feedback Source. 0: sensor, 1: calculated
+      #RpmFbk : REAL; // RPM Feedback Signal
+      #Trip : BOOL; // Drive Protection Indicator. 0: tripped, 1: no error
+      #ResetAut : BOOL; // Reset command from controller program
+      #MonSafePos : BOOL; // Behaviour if monitoring error. 1 = safe pos, 0 = hold pos
+      #MonStatTi : REAL; // monitor time for static changes, in s
+      #MonDynTi : REAL; // monitor time for dynamic changes, in s
+   END_VAR
+   VAR_OUTPUT
+      #StateOpAct : BOOL; // Operator state active
+      #StateAutAct : BOOL; // Automatic state active
+      #StateOffAct : BOOL; // Offline state active
+      #SrcIntAct : BOOL; // Internal mode active
+      #SrcManAct : BOOL; // Manual mode active
+      #SafePosAct : BOOL; // Safe Position Activated. 1: activated
+      #FwdCtrl : BOOL; // Forward Control command to hardware
+      #RevCtrl : BOOL; // Reverse Control command to hardware
+      #Rpm : REAL; // RPM Setpoint
+      #MonStatErr : BOOL; // Static monitoring error occurred
+      #MonDynErr : BOOL; // Dynamic Monitoring error occurred
+   END_VAR
+
+   // ===========================================================================
+   // Extended Variables (OPL additions)
+   // ===========================================================================
+   VAR_INPUT
+      #id : INT; // unique project-wide ID to uniquely identify and track objects
+      #forward : BOOL; // Forward command from program
+      #reverse : BOOL; // Reverse command from program
+      #speed : REAL; // Speed command from program
+      #speedUnit : INT; // Speed Unit (%, RPM, ...)
+      #speedMin : REAL := 0.0; // Speed Min
+      #speedMax : REAL := 100.0; // Speed Max
+      #forwardFeedback : BOOL; // Forward feedback signal from device
+      #reverseFeedback : BOOL; // Reverse feedback signal from device
+      #speedFeedback : WORD; // Speed feedback
+      #speedScaleMin : REAL; // Speed scale min
+      #speedScaleMax : REAL; // Speed scale max
+      #hasFwdFeedback : BOOL := TRUE; // Has forward feedback
+      #hasRevFeedback : BOOL := TRUE; // Has reverse feedback
+      #enableForward : BOOL; // Enable Forward
+      #enableReverse : BOOL; // Enable Reverse
+      #trip : BOOL := TRUE; // Drive Protection Indicator. 0: tripped, 1: no error
+      #safeHold : BOOL; // Holds Energize on interlock
+      #monitor : BOOL := TRUE; // Enables errors on the feedback monitoring
+      #staticTimeout : REAL := 2.0; // Amount of time before a static monitoring error is triggered
+      #dynamicTimeout : REAL := 5.0; // Amount of time before a dynamic monitoring error is triggered
+      #simulate : BOOL; // Enable simulation
+      #simulateDelay : REAL := 1.0; // Simulated delay to set the feedback signals, in s
+      #interlockIn : BOOL; // forces safe position. 0 = interlock active
+      #permitIn : BOOL := TRUE; // permission to control. Does not activate safe position. 0 = no permission
+      #protectIn : BOOL; // Protect, sets safe position, sets protectState. 0 = Protect active
+      #reset : BOOL; // will try to reset itself TODO: better description
+   END_VAR
+   VAR_OUTPUT
+      #fwdCommand : BOOL; // Forward command to device
+      #revCommand : BOOL; // Reverse command to device
+      #forwardActive : BOOL; // Motor running forward
+      #reverseActive : BOOL; // Motor running reverse
+      #actualSpeed : REAL; // Actual motor speed
+      #remote : BOOL; // 0: operator/local, 1: automatic/remote
+      #operatorMode : BOOL; // Operator Mode
+      #automaticMode : BOOL; // Automatic Mode
+      #offlineMode : BOOL; // Offline Mode
+      #remoteSource : BOOL; // 0: operator/local, 1: automatic/remote
+      #internalSourceAct : BOOL;
+      #manualSourceAct : BOOL;
+   END_VAR
+
+   VAR
+      // Control Variables
+      #first_scan : BOOL := TRUE;
+      #second_scan : BOOL := FALSE;
+      // Local Variables (MTP)
+      #StateOffOp : BOOL; // Switch Operation Mode to 'Off' by operator
+      #StateOpOp : BOOL; // Switch Operation Mode to 'Operator' by operator
+      #StateAutOp : BOOL; // Switch Operation Mode to 'Automatic' by operator
+      #SrcIntOp : BOOL; // Switch Source Mode to 'Internal' by operator
+      #SrcManOp : BOOL; // Switch Source Mode to 'Manual' by operator
+      #StopOp : BOOL; // Stop command by operator
+      #FwdOp : BOOL; // Forward command by operator
+      #RevOp : BOOL; // Reverse command by operator
+      #RpmMan : REAL; // RPM Manual Setpoint
+      #RpmRbk : REAL; // RPM Readback Signal
+      #ResetOp : BOOL; // Reset command by operator
+      #MonEn : BOOL; // Monitor Enable. 1: enabled
+      // Local Variables (OPL)
+      #fwdFbkSimulated : BOOL; // Simulated forward feedback
+      #revFbkSimulated : BOOL; // Simulated reverse feedback
+      // Delay timers
+      #DelayTimer1 : TON;
+      #DelayTimer2 : TON;
+   END_VAR
+
+BEGIN
+   // ===========================================================================
+   // STARTUP - SECOND SCAN
+   // ===========================================================================
+   IF second_scan THEN
+      // switch control mode back to operator
+      StateChannel := FALSE;
+      // reset command to switch to auto mode
+      StateAutAut := FALSE;
+      // end second scan
+      second_scan := FALSE;
+   END_IF;
+
+   // ===========================================================================
+   // STARTUP - FIRST SCAN
+   // ===========================================================================
+   IF first_scan THEN
+      // allow program control for the mode
+      StateChannel := TRUE;
+      // switch to auto mode
+      StateAutAut := TRUE;
+      // send a reset (will be reset automatically) (TODO: why is this needed?)
+      reset := TRUE;
+      // prepare second scan
+      first_scan := FALSE;
+      second_scan := TRUE;
+   END_IF;
+   // ===========================================================================
+   // MTP Interface Functionality (from MonAnaDrv)
+   // ===========================================================================
+
+
+   // ===========================================================================
+   // Extended Functionality (OPL additions)
+   // ===========================================================================
+
+   #WQC := 16#FF;
+   #OSLevel := 16#00;
+   #remote := StateChannel;
+   #operatorMode := StateOpAct;
+   #automaticMode := StateAutAct;
+   #offlineMode := StateOffAct;
+   #remoteSource := SrcChannel;
+   #internalSourceAct := SrcIntAct;
+   #manualSourceAct := SrcManAct;
+   #PermEn := TRUE;
+   #IntlEn := TRUE;
+   #ProtEn := TRUE;
+   #Permit := permitIn;
+   #Interlock := NOT  interlockIn;
+   #Protect := NOT  protectIn;
+   #SafePos := FALSE;
+   #FwdAut := forward;
+   #RevAut := reverse;
+   #fwdCommand := FwdCtrl;
+   #revCommand := RevCtrl;
+   #FwdFbkCalc := simulate  OR  NOT  hasFwdFeedback;
+   #RevFbkCalc := simulate  OR  NOT  hasRevFeedback;
+   DelayTimer1(IN := (simulate  OR  NOT  hasFwdFeedback)  AND  fwdCommand, PT := INT_TO_TIME(REAL_TO_INT(simulateDelay * 1000.0)));
+   fwdFbkSimulated := DelayTimer1.Q;
+   DelayTimer2(IN := (simulate  OR  NOT  hasRevFeedback)  AND  NOT  revCommand, PT := INT_TO_TIME(REAL_TO_INT(simulateDelay * 1000.0)));
+   revFbkSimulated := DelayTimer2.Q;
+   #FwdFbk := (forwardFeedback  AND  NOT  FwdFbkCalc)  OR  (fwdFbkSimulated  AND  FwdFbkCalc);
+   #RevFbk := (reverseFeedback  AND  NOT  RevFbkCalc)  OR  (revFbkSimulated  AND  RevFbkCalc);
+   #Trip := trip;
+   #ResetAut := reset;
+   #RpmSclMin := speedMin;
+   #RpmSclMax := speedMax;
+   #RpmUnit := speedUnit;
+   #RpmMin := speedMin;
+   #RpmMax := speedMax;
+   #RpmRbk := actualSpeed;
+   #actualSpeed := Rpm;
+   #reset := FALSE;
+   #MonSafePos := safeHold;
+   #MonStatTi := staticTimeout;
+   #MonDynTi := dynamicTimeout;
+
+END_FUNCTION_BLOCK

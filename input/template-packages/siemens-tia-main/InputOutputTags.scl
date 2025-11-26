@@ -1,0 +1,10 @@
+{{~
+    set_name('io_tags_' + cm_type.name)
+    set_folder('tags')
+
+    # Columns:
+    # Name | Address | Data type | ? | ? | ? | Comment | Supervision | ?
+~}}
+{{~ for tag in tags ~}}
+"{{tag.name}}","%{{tag.address}}","{{ tag.data_type }}","True","True","False","{{tag.comment}}","","True"
+{{~ end ~}}

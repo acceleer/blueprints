@@ -1,0 +1,22 @@
+{{~
+    set_name('Call_All_Generated')
+    set_folder('')
+~}}
+
+FUNCTION "Call_All_Generated": Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+BEGIN
+
+REGION Main Program
+
+{{~ for cm_type in model.ordered_cm_types ~}}
+	"CM_Instances_{{ cm_type.name }}"();
+{{~ end ~}}
+
+	"PhaseInstances"();
+
+END_REGION
+
+END_FUNCTION

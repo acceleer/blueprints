@@ -1,0 +1,43 @@
+{{~
+    set_name('Call_PhaseInstances')
+    set_folder('PhaseInstances')
+~}}
+
+FUNCTION_BLOCK "Call_PhaseInstances"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+VAR
+{{~ for phase_instance in model.ordered_phase_instances ~}}
+	{{ phase_instance.name }} : "{{ phase_instance.phase_type.name }}" ;
+{{~ end ~}}
+
+END_VAR
+
+BEGIN
+
+REGION Call Modules
+
+
+{{~ # if CM linking is disabled then don't link from CM  ~}}
+{{ if settings.DisableCmLinking == 'true' }}
+
+	{{~ for phase_instance in model.ordered_phase_instances ~}}
+		{{ phase_instance.name }}();
+	{{~ end ~}}
+
+{{~ else # cm linking not disabled ~}}
+
+	{{~ for phase_instance in model.ordered_phase_instances ~}}
+		{{ phase_instance.name }}(
+        {{~ for linked_cm in phase_instance.linked_cm_instances ~}}
+            {{ linked_cm.key }} := "CM_Instances_{{ linked_cm.value.cm_type_name }}"."_{{ linked_cm.value.name }}"{{ if !for.last }},{{ end }}
+        {{~ end ~}}
+        );
+	{{~ end ~}}
+
+{{~ end # end cm linking enable/disable ~}}
+
+END_REGION
+
+END_FUNCTION_BLOCK

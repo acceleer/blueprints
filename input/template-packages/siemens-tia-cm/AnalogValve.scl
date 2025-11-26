@@ -1,0 +1,224 @@
+{{~
+    set_name('AnalogValve')
+    set_folder('_generated/CMTypes')
+~}}
+// ==============================================================================
+// AnalogValve - Function Block
+// ==============================================================================
+// Generated from Open Process Library specification
+// Template: Siemens-TIA-full (SCL for S7-1200/1500)
+// ==============================================================================
+
+FUNCTION_BLOCK "AnalogValve"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   // Flattened implementation including MonAnaVlv interface
+   // ===========================================================================
+   // MTP Interface Variables (from MonAnaVlv)
+   // ===========================================================================
+   VAR_INPUT
+      #StateChannel : BOOL; // OperationMode selection. 0: operator (..Op), 1: automatic (..Aut)
+      #StateOffAut : BOOL; // Switch Operation Mode to 'Offline' in automatic mode
+      #StateOpAut : BOOL; // Switch Operation Mode to 'Operator' in automatic mode
+      #StateAutAut : BOOL; // Switch Operation Mode to 'Automatic' in automatic mode
+      #SrcChannel : BOOL; // SourceMode selection. 0: operator (..Op), 1: automatic (..Aut)
+      #SrcManAut : BOOL; // Switch Source Mode to 'Manual' in automatic mode
+      #SrcIntAut : BOOL; // Switch Source Mode to 'Internal' in automatic mode
+      #PermEn : BOOL; // Enables the Permission Lock. 1 = enabled (info for HMI)
+      #Permit : BOOL; // Permit, allows control. Does not activate safe position. 1 = permission given
+      #IntlEn : BOOL; // Enables the Interlock Lock. 1 = enabled (info for HMI)
+      #Interlock : BOOL; // Interlock, sets safe position. 0 = interlock active
+      #ProtEn : BOOL; // Enables the Protection Lock. 1 = enabled (info for HMI)
+      #Protect : BOOL; // Protect, sets safe position, sets protectState. 0 = Protect active
+      #WQC : BYTE; // Worst Quality Code Variable
+      #OSLevel : BYTE; // manual operation permission. 0 = only on-site. >0: only from POL
+      #SafePos : BOOL; // Safe Position. 0: posMin, 1: posMax
+      #SafePosEn : BOOL; // Safe Position Enable. 1: has safe position, 0: has no safe position
+      #OpenAut : BOOL; // Open command from controller program
+      #CloseAut : BOOL; // Close command from controller program
+      #PosSclMin : REAL; // Position Setpoint Scale Low Limit
+      #PosSclMax : REAL; // Position Setpoint Scale High Limit
+      #PosUnit : INT; // Position Setpoint Unit
+      #PosMin : REAL; // Position Setpoint Low Limit
+      #PosMax : REAL; // Position Setpoint High Limit
+      #PosInt : REAL; // Position Internal Setpoint
+      #OpenFbkCalc : BOOL; // Open Feedback Source. 0: sensor, 1: calculated
+      #OpenFbk : BOOL; // Open Feedback Signal
+      #CloseFbkCalc : BOOL; // Close Feedback Source. 0: sensor, 1: calculated
+      #CloseFbk : BOOL; // Close Feedback Signal
+      #PosFbkCalc : BOOL; // Position Feedback Source. 0: sensor, 1: calculated
+      #PosFbk : REAL; // Position Feedback Signal
+      #ResetAut : BOOL; // Reset command from controller program
+   END_VAR
+   VAR_OUTPUT
+      #StateOpAct : BOOL; // Operator state active
+      #StateAutAct : BOOL; // Automatic state active
+      #StateOffAct : BOOL; // Offline state active
+      #SrcIntAct : BOOL; // Internal mode active
+      #SrcManAct : BOOL; // Manual mode active
+      #SafePosAct : BOOL; // Safe Position Activated. 1: activated
+      #OpenAct : BOOL; // Valve is set to Open
+      #CloseAct : BOOL; // Valve is set to Close
+      #Pos : REAL; // Position Setpoint
+   END_VAR
+
+   // ===========================================================================
+   // Extended Variables (OPL additions)
+   // ===========================================================================
+   VAR_INPUT
+      #id : INT; // unique project-wide ID to uniquely identify and track objects
+      #activateManualSource : BOOL; // Activates Fixed Manual Setpoint (Activation by Program)
+      #activateDynamicSource : BOOL; // Activates Internal Dynamic Setpoint (Activation by Program)
+      #activateFixedSource : BOOL; // Activates Internal Fixed Setpoint (Activation by Program)
+      #dynamicSource : REAL; // Dynamic Source from Program (for example from PID controller)
+      #fixedSource : REAL; // Fixed Source from Program (for example from a Phase/Sequence control)
+      #feedbackPosition : WORD; // Position feedback (0-100%)
+      #scaleMin : REAL := 0.0; // Position scale min
+      #scaleMax : REAL := 100.0; // Position scale max
+      #feedbackOpen : BOOL; // feedback open
+      #feedbackClose : BOOL; // feedback close
+      #hasFbOpen : BOOL; // has open feedback
+      #hasFbClose : BOOL; // hase close feedback
+      #safeOpen : BOOL; // Safe Position is Open
+      #enableSafePos : BOOL; // Enable safe position
+      #simulate : BOOL; // Enable simulation
+      #simulateDelay : REAL := 1.0; // Simulated delay to set the feedback signals, in s
+      #interlockIn : BOOL; // forces safe position. 1 = interlock active
+      #permitIn : BOOL := TRUE; // permission to control. Does not activate safe position. 1 = no permission
+      #protectIn : BOOL; // Protect, sets safe position, sets protectState. 1 = Protect active
+      #reset : BOOL; // will try to reset itself
+   END_VAR
+   VAR_OUTPUT
+      #positionOutDevice : WORD; // Position Command to device (0-100%)
+      #positionOut : REAL; // Position Command for use in program
+      #remote : BOOL; // 0: operator/local, 1: automatic/remote
+      #operatorMode : BOOL; // Operator Mode
+      #automaticMode : BOOL; // Automatic Mode
+      #offlineMode : BOOL; // Offline Mode
+      #error : BOOL; // Any error active
+      #opened : BOOL; // Valve is opened
+      #closed : BOOL; // Valve is closed
+      #programSelectsSource : BOOL;
+      #operatorSelectsSource : BOOL;
+      #manualSourceAct : BOOL;
+      #internalSourceAct : BOOL;
+      #dynamicSourceAct : BOOL; // Will be active on startup
+      #fixedSourceAct : BOOL;
+   END_VAR
+
+   VAR
+      // Control Variables
+      #first_scan : BOOL := TRUE;
+      #second_scan : BOOL := FALSE;
+      // Local Variables (MTP)
+      #StateOffOp : BOOL; // Switch Operation Mode to 'Off' by operator
+      #StateOpOp : BOOL; // Switch Operation Mode to 'Operator' by operator
+      #StateAutOp : BOOL; // Switch Operation Mode to 'Automatic' by operator
+      #SrcIntOp : BOOL; // Switch Source Mode to 'Internal' by operator
+      #SrcManOp : BOOL; // Switch Source Mode to 'Manual' by operator
+      #OpenOp : BOOL; // Open command by operator
+      #CloseOp : BOOL; // Close command by operator
+      #PosMan : REAL; // Position Manual Setpoint
+      #PosRbk : REAL; // Position Readback Signal
+      #ResetOp : BOOL; // Reset command by operator
+      // Local Variables (OPL)
+      #fbOpenSimulated : BOOL; // Simulated open feedback
+      #fbCloseSimulated : BOOL; // Simulated Close feedback
+      #selectedPosition : REAL;
+      // Delay timers
+      #DelayTimer1 : TON;
+      #DelayTimer2 : TON;
+   END_VAR
+
+BEGIN
+   // ===========================================================================
+   // STARTUP - SECOND SCAN
+   // ===========================================================================
+   IF second_scan THEN
+      // switch control mode back to operator
+      StateChannel := FALSE;
+      // reset command to switch to auto mode
+      StateAutAut := FALSE;
+      // end second scan
+      second_scan := FALSE;
+   END_IF;
+
+   // ===========================================================================
+   // STARTUP - FIRST SCAN
+   // ===========================================================================
+   IF first_scan THEN
+      // allow program control for the mode
+      StateChannel := TRUE;
+      // switch to auto mode
+      StateAutAut := TRUE;
+      // send a reset (will be reset automatically) (TODO: why is this needed?)
+      reset := TRUE;
+      // prepare second scan
+      first_scan := FALSE;
+      second_scan := TRUE;
+   END_IF;
+   // ===========================================================================
+   // MTP Interface Functionality (from MonAnaVlv)
+   // ===========================================================================
+
+
+   // ===========================================================================
+   // Extended Functionality (OPL additions)
+   // ===========================================================================
+
+   #WQC := 16#FF;
+   #OSLevel := 16#00;
+   #remote := StateChannel;
+   #operatorMode := StateOpAct;
+   #automaticMode := StateAutAct;
+   #offlineMode := StateOffAct;
+   #programSelectsSource := SrcChannel;
+   #operatorSelectsSource := NOT  SrcChannel;
+   #internalSourceAct := SrcIntAct;
+   #manualSourceAct := SrcManAct;
+   #SrcManAut := activateManualSource;
+   #SrcIntAut := activateDynamicSource  OR  activateFixedSource;
+   IF activateFixedSource THEN
+      #fixedSourceAct := TRUE;
+   END_IF;
+   IF activateDynamicSource THEN
+      #fixedSourceAct := FALSE;
+   END_IF;
+   #dynamicSourceAct := NOT  fixedSourceAct;
+   #PermEn := TRUE;
+   #IntlEn := TRUE;
+   #ProtEn := TRUE;
+   #Permit := permitIn;
+   #Interlock := NOT  interlockIn;
+   #Protect := NOT  protectIn;
+   #SafePos := safeOpen;
+   #SafePosEn := enableSafePos;
+   #selectedPosition := (PosInt * INT_TO_REAL(BOOL_TO_INT(SrcIntAct))) + (PosMan * INT_TO_REAL(BOOL_TO_INT(SrcManAct)));
+   #OpenAut := selectedPosition > 0;
+   #CloseAut := NOT  OpenAut;
+   #OpenFbkCalc := simulate  OR  NOT  hasFbOpen;
+   #CloseFbkCalc := simulate  OR  NOT  hasFbClose;
+   #PosFbkCalc := simulate;
+   DelayTimer1(IN := OpenFbkCalc  AND  OpenAut, PT := INT_TO_TIME(REAL_TO_INT(simulateDelay * 1000.0)));
+   fbOpenSimulated := DelayTimer1.Q;
+   DelayTimer2(IN := CloseFbkCalc  AND  NOT  OpenAut, PT := INT_TO_TIME(REAL_TO_INT(simulateDelay * 1000.0)));
+   fbCloseSimulated := DelayTimer2.Q;
+   #OpenFbk := (feedbackOpen  AND  NOT  OpenFbkCalc)  OR  (fbOpenSimulated  AND  OpenFbkCalc);
+   #CloseFbk := (feedbackClose  AND  NOT  CloseFbkCalc)  OR  (fbCloseSimulated  AND  CloseFbkCalc);
+   #opened := OpenFbk;
+   #closed := CloseFbk;
+   #ResetAut := reset;
+   #PosSclMin := scaleMin;
+   #PosSclMax := scaleMax;
+   #PosUnit := 0;
+   #PosMin := PosSclMin;
+   #PosMax := PosSclMax;
+   #PosInt := (dynamicSource * INT_TO_REAL(BOOL_TO_INT(dynamicSourceAct))) + (fixedSource * INT_TO_REAL(BOOL_TO_INT(fixedSourceAct)));
+   #PosFbk := (positionOut * INT_TO_REAL(BOOL_TO_INT(simulate))) + (feedbackPosition * INT_TO_REAL(BOOL_TO_INT(simulate)));
+   #positionOut := Pos;
+   #reset := FALSE;
+   #activateManualSource := FALSE;
+   #activateDynamicSource := FALSE;
+   #activateFixedSource := FALSE;
+
+END_FUNCTION_BLOCK

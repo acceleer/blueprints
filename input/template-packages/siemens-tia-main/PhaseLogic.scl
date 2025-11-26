@@ -1,0 +1,123 @@
+{{~
+    set_name('PhaseLogic')
+    set_folder('PhaseLogic')
+~}}
+FUNCTION_BLOCK "PhaseLogic"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+VAR_INPUT
+    // pass the first steps of all the S88 states to the PhaseLogic knows where to jump to
+    firstIdleStep: DINT;            // first idle step, to activate when the state changes to idle
+    firstHoldingStep: DINT;         // first holding step, to activate when the state changes to holding
+    firstAbortingStep: DINT;        // first aborting step, to activate when the state changes to aborting
+    firstPausingStep: DINT;         // first pausing step, to activate when the state changes to pausing
+    firstRestartingStep: DINT;      // first restarting step, to activate when the state changes to restarting
+    firstExecuteStep: DINT;         // first execute step, to activate when the state changes to execute
+    firstResumingStep: DINT;        // first resuming step, to activate when the state changes to resuming
+    firstUnholdingStep: DINT;       // first unholding step, to activate when the state changes to unholding
+    firstCompletingStep: DINT;      // first completing step, to activate when the state changes to completing
+    firstResettingStep: DINT;       // first resetting step, to activate when the state changes to resetting
+    firstStartingStep: DINT;        // first starting step, to activate when the state changes to starting
+    firstStoppingStep: DINT;        // first stopping step, to activate when the state changes to stopping
+END_VAR
+
+VAR
+
+    command { ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'False' }:DINT; // S88 command
+    state { ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'False' }:DINT; // S88 state
+    stepnumber { ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'False' }:DINT; // stepnumber, unique in the entire phase
+    message { ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'False' }:DINT; // message number
+    startHoldConditions { ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'False' }:LINT; // hold the intermediate logic result, not considering whether it's selected as a start or hold condition
+    holdConditions { ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'False' }:LINT; // hold conditions. 0 = ok to run
+    startConditions { ExternalAccessible := 'True'; ExternalVisible := 'True'; ExternalWritable := 'False' }:LINT; // start conditions. 1 = ok to run
+
+END_VAR
+
+VAR_TEMP
+
+    commandReset: BOOL; // 2
+    commandStart: BOOL; // 4
+    commandStop: BOOL; // 8
+    commandHold: BOOL; // 16
+    commandUnHold: BOOL; // 32
+    commandPause: BOOL; // 64
+    commandResume: BOOL; // 128
+    commandAbort: BOOL; // 256
+    commandRestart: BOOL; // 512
+    commandComplete: BOOL; // 1024
+
+END_VAR
+
+BEGIN
+
+REGION COMMANDS
+
+    // this implements the MTP/S88 transitions
+    commandReset:= command.%X1; // 2
+    commandStart:= command.%X2; // 4
+    commandStop:= command.%X3; // 8
+    commandHold:= command.%X4; // 16
+    commandUnHold:= command.%X5; // 32
+    commandPause:= command.%X6; // 64
+    commandResume:= command.%X7; // 128
+    commandAbort:= command.%X8; // 256
+    commandRestart:= command.%X9; // 512
+    commandComplete:= command.%X10; // 1024
+
+    IF commandStart THEN
+        stepnumber := firstStartingStep;
+        state := 8; // Starting State
+    END_IF;
+
+    IF commandRestart THEN
+        stepnumber := firstStartingStep;
+        state := 8; // Starting State
+    END_IF;
+
+    IF commandPause THEN
+        stepnumber := firstPausingStep;
+        state := 8192; // Pausing State
+    END_IF;
+
+    IF commandResume THEN
+        stepnumber := firstResumingStep;
+        state := 16384; // Resuming State
+    END_IF;
+
+    IF commandHold THEN
+        stepnumber := firstHoldingStep;
+        state := 1024; // Holding State
+    END_IF;
+
+    IF commandUnhold THEN
+        stepnumber := firstUnholdingStep;
+        state := 4096; // Unholding State
+    END_IF;
+
+    IF commandComplete THEN
+        stepnumber := firstCompletingStep;
+        state := 65536; // Completing State
+    END_IF;
+
+    IF commandStop THEN
+        stepnumber := firstStoppingStep;
+        state := 128; // Stopping State
+    END_IF;
+
+    IF commandAbort THEN
+        stepnumber := firstAbortingStep;
+        state := 256; // Aborting State
+    END_IF;
+
+    IF commandReset THEN
+        stepnumber := firstResettingStep;
+        state := 32768; // Resetting State
+    END_IF;
+
+    // reset the command
+    command := 0;
+
+
+END_REGION
+END_FUNCTION_BLOCK

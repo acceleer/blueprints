@@ -1,0 +1,286 @@
+{{~
+    set_name('SolenoidValve')
+    set_folder('_generated/CMTypes')
+~}}
+// ==============================================================================
+// SolenoidValve - Function Block
+// ==============================================================================
+// Generated from Open Process Library specification
+// Template: Siemens-TIA-full (SCL for S7-1200/1500)
+// ==============================================================================
+
+FUNCTION_BLOCK "SolenoidValve"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   // Flattened implementation including MonBinVlv interface
+   // ===========================================================================
+   // MTP Interface Variables (from MonBinVlv)
+   // ===========================================================================
+   VAR_INPUT
+      #StateChannel : BOOL; // 0: operator/local, 1: automatic/remote
+      #StateOffAut : BOOL; // Switch Operation Mode to 'Offline' in automatic mode
+      #StateOpAut : BOOL; // Switch Operation Mode to 'Operator' in automatic mode
+      #StateAutAut : BOOL; // Switch Operation Mode to 'Automatic' in automatic mode
+      #PermEn : BOOL; // Enables the Permission Lock. 1 = enabled (info for HMI)
+      #IntlEn : BOOL; // Enables the Interlock Lock. 1 = enabled (info for HMI)
+      #ProtEn : BOOL; // Enables the Protection Lock. 1 = enabled (info for HMI)
+      #Permit : BOOL; // Permit, allows control. Does not activate safe position. 0 = no permission
+      #Interlock : BOOL; // Interlock, sets safe position. 0 = interlock active
+      #Protect : BOOL; // Protect, sets safe position, needs reset. 0 = Protect active
+      #WQC : BYTE; // Worst Quality Code Variable
+      #OSLevel : BYTE; // manual operation permission. 0 = only on-site. >0: only from POL
+      #SafePos : BOOL; // Safe Position. 0: close, 1: open
+      #SafePosEn : BOOL; // Safe Position Enable. 0: has safe position, 1: hold position on interlock
+      #OpenAut : BOOL; // Open command from controller program
+      #CloseAut : BOOL; // Close command from controller program
+      #OpenFbkCalc : BOOL; // Open feedback is Calculated
+      #CloseFbkCalc : BOOL; // Close feedback is calculated
+      #OpenFbk : BOOL; // Open feedback from the hardware
+      #CloseFbk : BOOL; // Close feedback from the hardware
+      #MonSafePos : BOOL; // Behaviour if monitoring error. 1 = safe pos, 0 = hold pos
+      #MonStatTi : REAL := 5.0; // monitor time for static changes, in s
+      #MonDynTi : REAL := 2.0; // monitor time for dynamic changes, in s
+      #ResetAut : BOOL; // Reset command from controller program
+   END_VAR
+   VAR_OUTPUT
+      #StateOpAct : BOOL; // Operator state active
+      #StateAutAct : BOOL; // Automatic state active
+      #StateOffAct : BOOL; // Offline state active
+      #SafePosAct : BOOL; // Safe Position Activated. 1: activated
+      #Ctrl : BOOL; // Control command to hardware
+      #MonStatErr : BOOL; // Static monitoring error occurred
+      #MonDynErr : BOOL; // Dynamic Monitoring error occurred
+      #OperationMode : INT; // 0: Offline, 1: Operator, 2: Automatic
+   END_VAR
+
+   // ===========================================================================
+   // Extended Variables (OPL additions)
+   // ===========================================================================
+   VAR_INPUT
+      #id : INT; // unique project-wide ID to uniquely identify and track objects
+      #open : BOOL; // open command from PLC program
+      #outsideOpen : BOOL; // open command from local panel
+      #outsideClose : BOOL; // close command from local panel
+      #feedbackOpen : BOOL := TRUE; // feedback open
+      #feedbackClose : BOOL := TRUE; // feedback close
+      #hasFbOpen : BOOL; // has open feedback
+      #hasFbClose : BOOL; // hase close feedback
+      #safeOpen : BOOL; // Safe Position is Open
+      #safeHold : BOOL; // Holds Position on interlock (priority over safeOpen)
+      #monitor : BOOL := TRUE; // Enables errors on the feedback monitoring
+      #staticTimeout : REAL := 2.0; // Amount of time before a static monitoring error is triggered
+      #dynamicTimeout : REAL := 5.0; // Amount of time before a dynamic monitoring error is triggered
+      #simulate : BOOL; // Enable simulation
+      #simulateDelay : REAL := 1.0; // Simulated delay to set the feedback signals, in s
+      #interlockIn : BOOL; // forces safe position. 0 = interlock active
+      #permitIn : BOOL := TRUE; // permission to control. Does not activate safe position. 0 = no permission
+      #protectIn : BOOL; // Protect, sets safe position, sets protectState. 0 = Protect active
+      #reset : BOOL; // will try to reset itself TODO: better description
+      #externalFault : BOOL; // Loop failure-e.g. I/O card broken.
+      #surpressAlarms : BOOL; // surpresses alarms
+      #setAuto : BOOL; // sets auto mode (TODO: not linked?)
+      #setManual : BOOL; // sets manual mode (TODO: not linked?)
+      #setOutside : BOOL; // sets outside mode
+   END_VAR
+   VAR_OUTPUT
+      #openCommand : BOOL; // open command to device
+      #pulseOpen : BOOL; // one cycle pulse when starting open command
+      #pulseClose : BOOL; // one cycle pulse when ending open command
+      #remote : BOOL; // 0: operator/local, 1: automatic/remote
+      #operatorMode : BOOL; // Operator Mode
+      #automaticMode : BOOL; // Automatic Mode
+      #offlineMode : BOOL; // Offline Mode
+      #outside : BOOL; // Outside mode
+      #error : BOOL; // Any error active
+      #opened : BOOL; // Valve is opened
+      #closed : BOOL; // Valve is closed
+      #forceActive : BOOL; // Any forcing or safeguarding active
+      #surpressed : BOOL; // alarms surpressed
+   END_VAR
+
+   VAR
+      // Control Variables
+      #first_scan : BOOL := TRUE;
+      #second_scan : BOOL := FALSE;
+      // Local Variables (MTP)
+      #StateOffOp : BOOL; // Switch Operation Mode to 'Off' by operator
+      #StateOpOp : BOOL; // Switch Operation Mode to 'Operator' by operator
+      #StateAutOp : BOOL; // Switch Operation Mode to 'Automatic' by operator
+      #OpenOp : BOOL; // Open command by operator
+      #CloseOp : BOOL; // Close command by operator
+      #ResetOp : BOOL; // Reset command by operator
+      #MonEn : BOOL; // Monitor Enable. 1: enabled
+      #OpenedState : BOOL; // For tracking the static monitoring error
+      #ClosedState : BOOL; // For tracking the static monitoring error
+      // Local Variables (OPL)
+      #fbOpenSimulated : BOOL; // Simulated open feedback
+      #fbCloseSimulated : BOOL; // Simulated Close feedback
+      // Delay timers
+      #DelayTimer1 : TON;
+      #DelayTimer2 : TON;
+      #DelayTimer3 : TON;
+      #DelayTimer4 : TON;
+   END_VAR
+
+BEGIN
+   // ===========================================================================
+   // STARTUP - SECOND SCAN
+   // ===========================================================================
+   IF second_scan THEN
+      // switch control mode back to operator
+      StateChannel := FALSE;
+      // reset command to switch to auto mode
+      StateAutAut := FALSE;
+      // end second scan
+      second_scan := FALSE;
+   END_IF;
+
+   // ===========================================================================
+   // STARTUP - FIRST SCAN
+   // ===========================================================================
+   IF first_scan THEN
+      // allow program control for the mode
+      StateChannel := TRUE;
+      // switch to auto mode
+      StateAutAut := TRUE;
+      // send a reset (will be reset automatically) (TODO: why is this needed?)
+      reset := TRUE;
+      // prepare second scan
+      first_scan := FALSE;
+      second_scan := TRUE;
+   END_IF;
+   // ===========================================================================
+   // MTP Interface Functionality (from MonBinVlv)
+   // ===========================================================================
+
+
+   
+   // State Machine for the OperationMode
+   CASE OperationMode OF
+      0: // Offline
+         IF (StateOpAut  AND  StateChannel)  OR  (StateOpOp  AND  NOT  StateChannel) THEN
+            OperationMode := 1;
+         END_IF;
+      1: // Operator
+         IF (StateOffAut  AND  StateChannel)  OR  (StateOffOp  AND  NOT  StateChannel) THEN
+            OperationMode := 0;
+         END_IF;
+         IF (StateAutAut  AND  StateChannel)  OR  (StateAutOp  AND  NOT  StateChannel) THEN
+            OperationMode := 2;
+         END_IF;
+      2: // Automatic
+         IF (StateOpAut  AND  StateChannel)  OR  (StateOpOp  AND  NOT  StateChannel) THEN
+            OperationMode := 1;
+         END_IF;
+   END_CASE;
+
+   
+   // Make boolean indicators for the OperationMode State
+   StateOpAct := OperationMode = 1;
+   StateAutAct := OperationMode = 2;
+   StateOffAct := OperationMode = 0;
+
+   
+   // 'Protect' is for interlocks that need to be reset
+   IF (ResetAut  AND  StateChannel)  OR  (ResetOp  AND  NOT  StateChannel) THEN
+      Protect := FALSE;
+   END_IF;
+
+   
+   // signal indicating that the valve needs to go to the safe position
+   SafePosAct := (PermEn  AND  NOT  Permit)  OR  (IntlEn  AND  NOT  Interlock)  OR  (ProtEn  AND  NOT  Protect)  OR  (MonEn  AND  (MonStatErr  OR  MonDynErr));
+
+   
+   // control signal to the hardware
+   IF (SafePosAct  AND  SafePos  AND  NOT  SafePosEn)  OR  (NOT  SafePosAct  AND  ((OpenAut  AND  StateAutAct)  OR  (OpenOp  AND  StateOpAct))) THEN
+      Ctrl := TRUE;
+   END_IF;
+   IF (SafePosAct  AND  NOT  SafePos  AND  NOT  SafePosEn)  OR  (NOT  SafePosAct  AND  ((CloseAut  AND  StateAutAct)  OR  (CloseOp  AND  StateOpAct))) THEN
+      Ctrl := FALSE;
+   END_IF;
+
+   
+   // Opened and Closed States
+   IF Ctrl  AND  OpenFbk THEN
+      OpenedState := TRUE;
+   END_IF;
+   IF NOT  Ctrl THEN
+      OpenedState := FALSE;
+   END_IF;
+   IF NOT  Ctrl  AND  CloseFbk THEN
+      ClosedState := TRUE;
+   END_IF;
+   IF Ctrl THEN
+      ClosedState := FALSE;
+   END_IF;
+
+   
+   // Static and Dynamic Monitoring
+   DelayTimer1(IN := (MonEn  AND  OpenedState  AND  NOT  OpenFbk)  OR  ( MonEn  AND  ClosedState  AND  NOT  CloseFbk), PT := INT_TO_TIME(REAL_TO_INT(MonStatTi * 1000.0)));
+   IF DelayTimer1.Q THEN
+      MonStatErr := TRUE;
+   END_IF;
+   IF (ResetAut  AND  StateChannel)  OR  (ResetOp  AND  NOT  StateChannel) THEN
+      MonStatErr := FALSE;
+   END_IF;
+   DelayTimer2(IN := MonEn  AND  ((Ctrl  AND  NOT  OpenFbk)  OR  (NOT  Ctrl  AND  NOT  CloseFbk)), PT := INT_TO_TIME(REAL_TO_INT(MonDynTi * 1000.0)));
+   IF DelayTimer2.Q THEN
+      MonDynErr := TRUE;
+   END_IF;
+   IF (ResetAut  AND  StateChannel)  OR  (ResetOp  AND  NOT  StateChannel) THEN
+      MonDynErr := FALSE;
+   END_IF;
+
+   
+   // reset operator command
+   StateOffOp := FALSE;
+   StateOpOp := FALSE;
+   StateAutOp := FALSE;
+   OpenOp := FALSE;
+   CloseOp := FALSE;
+   ResetOp := FALSE;
+   StateOpAut := FALSE;
+   StateAutAut := FALSE;
+   StateOffAut := FALSE;
+
+   
+
+   
+
+   // ===========================================================================
+   // Extended Functionality (OPL additions)
+   // ===========================================================================
+
+   #WQC := 16#FF;
+   #remote := StateChannel;
+   #operatorMode := StateOpAct;
+   #automaticMode := StateAutAct;
+   #offlineMode := StateOffAct;
+   #PermEn := TRUE;
+   #IntlEn := TRUE;
+   #ProtEn := TRUE;
+   #Permit := permitIn;
+   #Interlock := NOT  interlockIn;
+   #Protect := NOT  protectIn;
+   #SafePos := safeOpen;
+   #MonSafePos := safeOpen;
+   #SafePosEn := safeHold;
+   #OpenAut := open;
+   #CloseAut := NOT  open;
+   #OpenFbkCalc := simulate  OR  NOT  hasFbOpen;
+   #CloseFbkCalc := simulate  OR  NOT  hasFbClose;
+   DelayTimer3(IN := OpenFbkCalc  AND  Ctrl, PT := INT_TO_TIME(REAL_TO_INT(simulateDelay * 1000.0)));
+   fbOpenSimulated := DelayTimer3.Q;
+   DelayTimer4(IN := CloseFbkCalc  AND  NOT  Ctrl, PT := INT_TO_TIME(REAL_TO_INT(simulateDelay * 1000.0)));
+   fbCloseSimulated := DelayTimer4.Q;
+   #OpenFbk := (feedbackOpen  AND  NOT  OpenFbkCalc)  OR  (fbOpenSimulated  AND  OpenFbkCalc);
+   #CloseFbk := (feedbackClose  AND  NOT  CloseFbkCalc)  OR  (fbCloseSimulated  AND  CloseFbkCalc);
+   #opened := Ctrl  AND  OpenFbk;
+   #closed := NOT  Ctrl  AND  CloseFbk;
+   #ResetAut := reset;
+   #MonEn := monitor;
+   #MonStatTi := staticTimeout;
+   #MonDynTi := dynamicTimeout;
+   #reset := FALSE;
+
+END_FUNCTION_BLOCK

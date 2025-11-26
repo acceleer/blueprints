@@ -1,0 +1,12 @@
+{
+    "Templates": [
+        {"Name": "AnalogMeasurement.scl", "Type": "cm_type"},
+        {"Name": "AnalogValve.scl", "Type": "cm_type"},
+        {"Name": "DigitalMeasurement.scl", "Type": "cm_type"},
+        {"Name": "Interlock4.scl", "Type": "cm_type"},
+        {"Name": "PIDController.scl", "Type": "cm_type"},
+        {"Name": "ReversingMotor.scl", "Type": "cm_type"},
+        {"Name": "SolenoidValve.scl", "Type": "cm_type"},
+        {"Name": "VFD.scl", "Type": "cm_type"}
+    ]
+}

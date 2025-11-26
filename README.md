@@ -9,19 +9,21 @@
 
 # Quick Start
 
-## 1. Clone this repo
-
-```powershell
-gh repo clone acceleer/blueprints
-```
-
-## 2. Install Acceleer CLI
+## 1. Install Acceleer CLI
 
 Run this command in PowerShell:
 
 ```powershell
 irm https://github.com/acceleer/acceleer-cli/releases/latest/download/install.ps1 | iex
 ```
+
+## 2. Clone this repo
+
+```powershell
+gh repo clone acceleer/blueprints
+```
+
+
 
 ## 3. Generate PLC Code from FDS
 

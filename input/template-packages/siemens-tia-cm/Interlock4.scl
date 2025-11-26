@@ -1,0 +1,85 @@
+{{~
+    set_name('Interlock4')
+    set_folder('_generated/CMTypes')
+~}}
+// ==============================================================================
+// Interlock4 - Function Block
+// ==============================================================================
+// Generated from Open Process Library specification
+// Template: Siemens-TIA-full (SCL for S7-1200/1500)
+// ==============================================================================
+
+FUNCTION_BLOCK "Interlock4"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   // Flattened implementation including LockView4 interface
+   // ===========================================================================
+   // MTP Interface Variables (from LockView4)
+   // ===========================================================================
+   VAR_INPUT
+      #WQC : BYTE; // Worst Quality Code Variable
+      #Logic : BOOL; // Logical Behaviour. 0: OR, 1: AND
+      #In1En : BOOL; // Enable Input. 0: not used
+      #In1 : BOOL; // Locking Input Value
+      #In1QC : BYTE; // Quality Code
+      #In1Inv : BOOL; // Inverted
+      #In1Txt : STRING; // Additional Text
+      #In2En : BOOL; // Enable Input. 0: not used
+      #In2 : BOOL; // Locking Input Value
+      #In2QC : BYTE; // Quality Code
+      #In2Inv : BOOL; // Inverted
+      #In2Txt : STRING; // Additional Text
+      #In3En : BOOL; // Enable Input. 0: not used
+      #In3 : BOOL; // Locking Input Value
+      #In3QC : BYTE; // Quality Code
+      #In3Inv : BOOL; // Inverted
+      #In3Txt : STRING; // Additional Text
+      #In4En : BOOL; // Enable Input. 0: not used
+      #In4 : BOOL; // Locking Input Value
+      #In4QC : BYTE; // Quality Code
+      #In4Inv : BOOL; // Inverted
+      #In4Txt : STRING; // Additional Text
+   END_VAR
+   VAR_OUTPUT
+      #Out : BOOL; // Locking Result Output
+      #OutQC : STRING; // Output Quality Code
+   END_VAR
+
+   // ===========================================================================
+   // Extended Variables (OPL additions)
+   // ===========================================================================
+
+   VAR
+      // Control Variables
+      #first_scan : BOOL := TRUE;
+      #second_scan : BOOL := FALSE;
+   END_VAR
+
+BEGIN
+   // ===========================================================================
+   // STARTUP - SECOND SCAN
+   // ===========================================================================
+   IF second_scan THEN
+      // end second scan
+      second_scan := FALSE;
+   END_IF;
+
+   // ===========================================================================
+   // STARTUP - FIRST SCAN
+   // ===========================================================================
+   IF first_scan THEN
+      // prepare second scan
+      first_scan := FALSE;
+      second_scan := TRUE;
+   END_IF;
+   // ===========================================================================
+   // MTP Interface Functionality (from LockView4)
+   // ===========================================================================
+
+
+   // ===========================================================================
+   // Extended Functionality (OPL additions)
+   // ===========================================================================
+
+
+END_FUNCTION_BLOCK

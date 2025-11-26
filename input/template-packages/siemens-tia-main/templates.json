@@ -1,0 +1,36 @@
+{
+    "Templates": [
+        {
+            "Name": "InputOutputTags.scl",
+            "Type": "cm_type"
+        },
+        {
+            "Name": "CallCmInstances.scl",
+            "Type": "cm_type"
+        },
+        {
+            "Name": "CmInstancesDb.scl",
+            "Type": "cm_type"
+        },
+        {
+            "Name": "PhaseLogic.scl",
+            "Type": "program"
+        },
+        {
+            "Name": "PhaseType.scl",
+            "Type": "phase_type"
+        },
+        {
+            "Name": "CallPhaseInstances.scl",
+            "Type": "program"
+        },
+        {
+            "Name": "PhaseInstancesDb.scl",
+            "Type": "program"
+        },
+        {
+            "Name": "CallAllGenerated.scl",
+            "Type": "program"
+        }
+    ]
+}

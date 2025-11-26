@@ -1,0 +1,91 @@
+{{~
+    set_name('DigitalMeasurement')
+    set_folder('_generated/CMTypes')
+~}}
+// ==============================================================================
+// DigitalMeasurement - Function Block
+// ==============================================================================
+// Generated from Open Process Library specification
+// Template: Siemens-TIA-full (SCL for S7-1200/1500)
+// ==============================================================================
+
+FUNCTION_BLOCK "DigitalMeasurement"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   // Flattened implementation including BinMon interface
+   // ===========================================================================
+   // MTP Interface Variables (from BinMon)
+   // ===========================================================================
+   VAR_INPUT
+      #WQC : BYTE; // Worst Quality Code Variable
+      #V : BOOL; // Value
+      #VState0 : STRING; // Text value for False
+      #VState1 : STRING; // Text value for True
+      #OSLevel : BYTE; // manual operation permission. 0 = only on-site. >0: only from POL
+      #VFlutEn : BOOL; // Enable Fluttering Recognition
+   END_VAR
+   VAR_OUTPUT
+      #VFlutAct : BOOL; // Fluttering Signal recognized
+   END_VAR
+
+   // ===========================================================================
+   // Extended Variables (OPL additions)
+   // ===========================================================================
+   VAR_INPUT
+      #id : INT; // unique project-wide ID to uniquely identify and track objects
+      #value : BOOL; // Value coming from device
+   END_VAR
+   VAR_OUTPUT
+      #valueOut : BOOL; // Value for use in program
+      #risingEdge : BOOL; // Input value transitioned from low to high
+      #fallingEdge : BOOL; // Input value transitioned from high to low
+   END_VAR
+
+   VAR
+      // Control Variables
+      #first_scan : BOOL := TRUE;
+      #second_scan : BOOL := FALSE;
+      // Local Variables (MTP)
+      #VFlutTi : REAL; // Period of active signal before it is flutter-free, in s
+      #VFlutCnt : INT; // Counts of the allowed flutering signals in the defined period vFlutTi
+      // Local Variables (OPL)
+      #lastValue : BOOL; // Value from last scan, for edge detection
+   END_VAR
+
+BEGIN
+   // ===========================================================================
+   // STARTUP - SECOND SCAN
+   // ===========================================================================
+   IF second_scan THEN
+      // end second scan
+      second_scan := FALSE;
+   END_IF;
+
+   // ===========================================================================
+   // STARTUP - FIRST SCAN
+   // ===========================================================================
+   IF first_scan THEN
+      // prepare second scan
+      first_scan := FALSE;
+      second_scan := TRUE;
+   END_IF;
+   // ===========================================================================
+   // MTP Interface Functionality (from BinMon)
+   // ===========================================================================
+
+
+   // ===========================================================================
+   // Extended Functionality (OPL additions)
+   // ===========================================================================
+
+   #WQC := 16#FF;
+   #OSLevel := 16#00;
+   #V := value;
+   #VState0 := 'FALSE';
+   #VState1 := 'TRUE';
+   #VFlutEn := FALSE;
+   #risingEdge := value <> lastValue  AND  value = TRUE;
+   #fallingEdge := value <> lastValue  AND  value = FALSE;
+   #lastValue := value;
+
+END_FUNCTION_BLOCK
