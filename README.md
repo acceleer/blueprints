@@ -7,6 +7,11 @@
 - ⚙️🏗️ Generate    : Deterministic Code-Generation at Scale
 - 🤖✅ Trusted AI  : Agentic Functional Design > Human Review > Deterministic Code
 
+# Purpose of B L U E P R I N T S
+
+- Demonstrate a CLI-based Design-Ops workflow (for GUI-based: subscribe to Acceleer)
+- Share and collaborate on Template Packages for different systems (Siemens, Rockwell, Beckhoff, ...) 
+
 # Quick Start
 
 ## 1. Install Acceleer CLI
@@ -48,10 +53,10 @@ From small skids to multi-plant standardizations.
 
 **Q: The textual FDS looks cumbersome to edit.**  
 **A:** This is only for demonstration and Agentic usage.  
-There is a collaborative and convenient GUI Editor available by subscribing on acceleer.com
+There is a collaborative and convenient GUI Editor available when using the Acceleer platform.
 
-**Q: How to get started?**  
-**A:** This repo is only for blueprints sharing and demonstration purposes. For real projects subscribe on acceleer.com
+**Q: How to import the generated PLC/DCS code in the relevant IDE?**  
+**A:** The Acceleer platform comes with an agent that allows the import into different target systems.
 
 **Q: Is there a community edition?**  
 **A:** Yes, reserved for open-source and educational projects.

@@ -12,7 +12,7 @@ This demo phase demonstrates all the possibilities of a phase design, including
 | PICSA4712_02 | AnalogMeasurement |         | CM              | Pressure sensor product          | 
 | PV4712_02    | AnalogValve       |         | CM              | Circulation valve                | 
 | UC4712_03    | PIDController     |         | CM              | Pressure control loop            | 
-| DosingValve  | SolenoidValve     |         | CM              | Dosing Valve                     | 
+| DosingValve  | ControlValve      |         | CM              | Dosing Valve                     | 
 
 
 ## Inputs

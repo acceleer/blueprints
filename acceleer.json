@@ -6,8 +6,8 @@
             "enable": true,
             "output-folder": "./output/siemens-tia",
             "template-packages": [
-                "./input/teplate-packages/siemens-tia-cm",
-                "./input/teplate-packages/siemens-tia-main"
+                "./input/template-packages/siemens-tia-cm",
+                "./input/template-packages/siemens-tia-main"
             ]
         }
     }

@@ -15,6 +15,7 @@ node_modules/
 # Build outputs
 dist/
 build/
+output/
 *.log
 
 # Environment variables
