@@ -43,7 +43,7 @@ acceleer generate
 ## 4. What just happened 🤯✨? (Quick FAQ)
 
 **Q: What just happened?**  
-**A:** The CLI reads the functional design (FDS) from ./inputs/functional-design and generates a.o PLC Code to ./outputs
+**A:** The CLI reads the functional design (FDS) from ./input/design-spec and generates a.o PLC Code to ./output
 
 **Q: Is this for real projects?**  
 **A:** YES! This is not a research project.  
