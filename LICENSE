@@ -1,0 +1,24 @@
+IMPORTANT LICENSE NOTICE
+
+This repository contains components under different licenses.
+
+1. Templates
+   All files and subdirectories located under the `input/template-packages/` directory
+   are licensed under the MIT License.
+
+   The full text of the MIT License applicable to those files is available
+   at: input/template-packages/LICENSE
+
+2. All Other Content
+   Except for the contents of the `input/template-packages/` directory, all files in this
+   repository are licensed under the terms below.
+
+Copyright (c) 2025 Acceleer BV
+
+All rights reserved.
+
+Except for the MIT-licensed templates described above, no part of this
+repository may be used, copied, modified, merged, published, distributed,
+sublicensed, or sold without prior written permission from the copyright holder.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
