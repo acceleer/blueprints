@@ -1,6 +1,6 @@
 {{~
     set_name('DigitalMeasurement')
-    set_folder('_generated/CMTypes')
+    set_folder('CMTypes')
 ~}}
 // ==============================================================================
 // DigitalMeasurement - Function Block

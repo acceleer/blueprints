@@ -12,7 +12,7 @@ This demo phase demonstrates all the possibilities of a phase design, including
 | PICSA4712_02 | AnalogMeasurement |         | CM              | Pressure sensor product          | 
 | PV4712_02    | AnalogValve       |         | CM              | Circulation valve                | 
 | UC4712_03    | PIDController     |         | CM              | Pressure control loop            | 
-| DosingValve  | ControlValve      |         | CM              | Dosing Valve                     | 
+| DosingValve  | SolenoidValve     |         | CM              | Dosing Valve                     | 
 
 
 ## Inputs
@@ -269,6 +269,26 @@ This demo phase demonstrates all the possibilities of a phase design, including
 
 
 ## Hold & Start Conditions
+| No | Condition                 | Start | Hold | Steps         | 
+| -- | ------------------------- | ----- | ---- | ------------- | 
+| 1  | # example start condition | x     |      |               |
+|    | StartLevel > 10           |       |      |               |
+| -- | ------------------------- | ----- | ---- | ------------- | 
+| 2  | # example hold condition  |       | x    | 10, 20, 30-40 |
+|    | StartLevel > 20           |       |      |               |
 
 
 ## Warnings, Alarms & Messages
+| No | Condition                      | Warning | Alarm | Message | Steps          | 
+| -- | ------------------------------ | ------- | ----- | ------- | -------------- | 
+| 1  | # example warning              | x       |       |         | 70, 80, 90-100 |
+|    | > warning message for operator |         |       |         |                |
+|    | a> 100                         |         |       |         |                |
+| -- | ------------------------------ | ------- | ----- | ------- | -------------- | 
+| 2  | # example alarm                |         | x     |         |                |
+|    | > alarm message for operator   |         |       |         |                |
+|    | a > 200                        |         |       |         |                |
+| -- | ------------------------------ | ------- | ----- | ------- | -------------- | 
+| 3  | # example message              |         |       | x       |                |
+|    | > normal message for operator  |         |       |         |                |
+|    | a > 300                        |         |       |         |                |

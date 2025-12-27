@@ -1,6 +1,6 @@
 {{~
     set_name('SolenoidValve')
-    set_folder('_generated/CMTypes')
+    set_folder('CMTypes')
 ~}}
 // ==============================================================================
 // SolenoidValve - Function Block

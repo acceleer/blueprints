@@ -1,6 +1,6 @@
 {{~
     set_name('PIDController')
-    set_folder('_generated/CMTypes')
+    set_folder('CMTypes')
 ~}}
 // ==============================================================================
 // PIDController - Function Block

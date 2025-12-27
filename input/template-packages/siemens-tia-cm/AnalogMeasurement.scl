@@ -1,6 +1,6 @@
 {{~
     set_name('AnalogMeasurement')
-    set_folder('_generated/CMTypes')
+    set_folder('CMTypes')
 ~}}
 // ==============================================================================
 // AnalogMeasurement - Function Block

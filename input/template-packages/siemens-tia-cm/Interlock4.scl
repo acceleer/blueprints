@@ -1,6 +1,6 @@
 {{~
     set_name('Interlock4')
-    set_folder('_generated/CMTypes')
+    set_folder('CMTypes')
 ~}}
 // ==============================================================================
 // Interlock4 - Function Block
