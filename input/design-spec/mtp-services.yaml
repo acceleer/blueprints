@@ -1,0 +1,37 @@
+services:
+  - name: Dosing
+    description: "Dosing Service"
+    parameters:
+      - name: setPressure
+        dataType: Real
+        parameterType: Config
+      - name: setTemperature
+        dataType: Real
+        parameterType: Procedure
+    procedures:
+      - name: DosingA
+        phaseInstance: Dosing_A
+        parameterMappings:
+          - serviceParam: setTemperature
+            phaseVariable: Temperature
+          - serviceParam: setPressure
+            phaseVariable: Pressure
+      - name: DosingB
+        phaseInstance: Dosing_B
+        parameterMappings:
+          - serviceParam: setTemperature
+            phaseVariable: Temperature
+          - serviceParam: setPressure
+            phaseVariable: Pressure
+  - name: Filling
+    description: "Filling Service"
+    parameters:
+      - name: setQuantity
+        dataType: Real
+        parameterType: Config
+    procedures:
+      - name: NewProcedure
+        phaseInstance: Filling
+        parameterMappings:
+          - serviceParam: setQuantity
+            phaseVariable: Quantity

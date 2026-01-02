@@ -1,5 +1,8 @@
 # CM TYPE: PIDController
 
+- dexpi-mapping: PidController
+- mtp-mapping: PIDCtrl
+
 ## Inputs
 | Name                 | Suffix             | DataType | IO Type | Comment                                                       | Primary | IsError | Configurable | True Words        | False Words | Loopback | Enum | 
 | -------------------- | ------------------ | -------- | ------- | ------------------------------------------------------------- | ------- | ------- | ------------ | ----------------- | ----------- | -------- | ---- | 

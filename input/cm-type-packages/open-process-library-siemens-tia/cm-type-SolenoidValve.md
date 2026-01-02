@@ -1,5 +1,8 @@
 # CM TYPE: SolenoidValve
 
+- dexpi-mapping: 
+- mtp-mapping: MonBinVlv
+
 ## Inputs
 | Name           | Suffix          | DataType | IO Type | Comment                                                                   | Primary | IsError | Configurable | True Words | False Words | Loopback | Enum | 
 | -------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------- | ------- | ------- | ------------ | ---------- | ----------- | -------- | ---- | 

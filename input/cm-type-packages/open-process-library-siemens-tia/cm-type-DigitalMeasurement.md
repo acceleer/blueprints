@@ -1,5 +1,8 @@
 # CM TYPE: DigitalMeasurement
 
+- dexpi-mapping: HandValve
+- mtp-mapping: BinMon
+
 ## Inputs
 | Name  | Suffix | DataType | IO Type | Comment                                                       | Primary | IsError | Configurable | True Words | False Words | Loopback | Enum | 
 | ----- | ------ | -------- | ------- | ------------------------------------------------------------- | ------- | ------- | ------------ | ---------- | ----------- | -------- | ---- | 
