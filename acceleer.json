@@ -9,6 +9,16 @@
                 "./input/template-packages/siemens-tia-cm",
                 "./input/template-packages/siemens-tia-main"
             ]
+        },
+        "mtp": {
+            "enable": true,
+            "output-folder": "./output/mtp",
+            "export-mtp": true,
+            "values": {
+                "module-name": "ModuleName",
+                "opc-ua-prefix": "OpcUaPrefix",
+                "opc-ua-namespace": "OpcUaNamespace"
+            }
         }
     }
 }
