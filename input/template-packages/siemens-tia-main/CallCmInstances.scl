@@ -1,6 +1,6 @@
 {{~
     set_name('Call_CMs_' + cm_type.name)
-    set_folder('./../CM_Instances')
+    set_folder('CM_Instances')
 ~}}
 
 FUNCTION_BLOCK "Call_CMs_{{ cm_type.name }}"
