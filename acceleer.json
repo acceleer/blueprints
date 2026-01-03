@@ -10,6 +10,14 @@
                 "./input/template-packages/siemens-tia-main"
             ]
         },
+        "beckhoff-twincat-mtp": {
+            "enable": true,
+            "output-folder": "./output/beckhoff-twincat-mtp",
+            "template-packages": [
+                "./input/template-packages/beckhoff-twincat-cm",
+                "./input/template-packages/beckhoff-twincat-main"
+            ]
+        },
         "mtp": {
             "enable": true,
             "output-folder": "./output/mtp",
