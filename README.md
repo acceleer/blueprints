@@ -76,3 +76,5 @@ Generates an MTP (Module Type Package) file.
 This will create two files:
 - mtp_export.mtp: the full mtp file, which can be imported in software packages supporting MTP workflows
 - mtp_export.xml: only for debugging, this is what is already packages inside mtp_export.mtp, but helps for faster analysis without having to unzip the mtp file
+
+(note: this is a demonstration workflow, not all MTP features are implemented yet)
