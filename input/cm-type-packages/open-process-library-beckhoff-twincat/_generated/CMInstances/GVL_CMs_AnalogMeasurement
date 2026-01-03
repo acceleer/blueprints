@@ -1,0 +1,20 @@
+<globalVars name="GVL_CMs_AnalogMeasurement">
+    <variable name="_PT4712_01">
+        <type><derived name="AnalogMeasurement" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> </xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+    <variable name="_PT4712_02">
+        <type><derived name="AnalogMeasurement" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> </xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+    <variable name="_TT4750_03">
+        <type><derived name="AnalogMeasurement" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> </xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+</globalVars>

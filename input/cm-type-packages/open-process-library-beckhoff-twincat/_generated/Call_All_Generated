@@ -1,0 +1,32 @@
+<pou name="Call_All_Generated" pouType="function">
+    <documentation>
+        Call all generated functions
+    </documentation>
+    <interface>
+        <returnType>
+            <BOOL />
+        </returnType>
+    </interface>
+    <body>
+        <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// 
+Call_CMs_AnalogMeasurement();
+// 
+Call_CMs_AnalogValve();
+// 
+Call_CMs_DigitalMeasurement();
+// 
+Call_CMs_PIDController();
+// 
+Call_CMs_ReversingMotor();
+// 
+Call_CMs_SolenoidValve();
+// 
+Call_CMs_VFD();
+// call phase instances
+Call_PhaseInstances();
+            </xhtml>
+        </ST>
+    </body>
+</pou>

@@ -1,0 +1,14 @@
+<globalVars name="GVL_CMs_ReversingMotor">
+    <variable name="_P4711">
+        <type><derived name="ReversingMotor" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> </xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+    <variable name="_P4712">
+        <type><derived name="ReversingMotor" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> </xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+</globalVars>

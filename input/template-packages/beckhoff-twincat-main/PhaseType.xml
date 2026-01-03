@@ -1,0 +1,555 @@
+{{~
+    set_name('PH_' + phase_type.name)
+    set_folder('PhaseTypes')
+~}}
+<pou name="PH_{{phase_type.name}}" pouType="functionBlock">
+    <documentation>
+        Phase Type
+    </documentation>
+    <interface>
+        <addData>
+            <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
+                <Inheritance>
+                    <Extends>PhaseLogic</Extends>
+                </Inheritance>
+            </data>
+        </addData>
+        <documentation>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml"> {{ phase_type.title }}</xhtml>
+        </documentation>
+
+        <inOutVars>
+
+
+            {{~## add all the control modules ##~}}
+            {{~ for linked_control_module in phase_type.linked_control_modules ~}}
+            <variable name="{{ linked_control_module.name}} ">
+                <type><derived name="{{ linked_control_module.cm_type_name }}" /></type>
+                <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> {{ linked_control_module.comment }}</xhtml></documentation>
+            </variable>
+            {{~ end ~}}
+
+
+            {{~## add all the inputs from the phase type ##~}}
+            {{~ for item in phase_type.in_outs ~}}
+            <variable name="{{ item.name}} ">
+                <type><{{ map_data_type(item.data_type, 'BOOL', 'DINT', 'REAL') }} /></type>
+                <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> {{ item.single_line_comment }}</xhtml></documentation>
+            </variable>
+            {{~ end ~}}
+
+
+        </inOutVars>
+
+        <inputVars>
+
+
+            {{~## add all the recipe parameters from the phase type ##~}}
+            {{~ for item in phase_type.recipe_parameters ~}}
+            <variable name="{{ item.name}} ">
+                <type><{{ map_data_type(item.data_type, 'BOOL', 'DINT', 'REAL') }} /></type>
+                <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> {{ item.single_line_comment }}</xhtml></documentation>
+            </variable>
+            {{~ end ~}}
+
+
+            {{~## add all the inputs from the phase type ##~}}
+            {{~ for item in phase_type.inputs ~}}
+            <variable name="{{ item.name}} ">
+                <type><{{ map_data_type(item.data_type, 'BOOL', 'DINT', 'REAL') }} /></type>
+                <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> {{ item.single_line_comment }}</xhtml></documentation>
+            </variable>
+            {{~ end ~}}
+
+
+        </inputVars>
+
+        <outputVars>
+
+
+            {{~## add all the outputs from the phase type ##~}}
+            {{~ for item in phase_type.outputs ~}}
+            <variable name="{{ item.name}} ">
+                <type><{{ map_data_type(item.data_type, 'BOOL', 'DINT', 'REAL') }} /></type>
+                <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> {{ item.single_line_comment }}</xhtml></documentation>
+            </variable>
+            {{~ end ~}}
+
+
+            {{~ # add outputs for the auto-generated timers -}}
+            {{~ for item in phase_type.ordered_timer_definitions ~}}
+            <variable name="{{ item.name}} ">
+                <type><BOOL /></type>
+                <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> {{ item.single_line_comment }}</xhtml></documentation>
+            </variable>
+            {{~ end ~}}
+
+
+        </outputVars>
+
+        <localVars>
+
+
+            {{~## add all the inputs from the phase type ##~}}
+            {{~ for item in phase_type.internals ~}}
+            <variable name="{{ item.name}} ">
+                <type><{{ map_data_type(item.data_type, 'BOOL', 'DINT', 'REAL') }} /></type>
+                <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> {{ item.single_line_comment }}</xhtml></documentation>
+            </variable>
+            {{~ end ~}}
+
+
+        </localVars>
+
+        <tempVars>
+
+        </tempVars>
+    </interface>
+    <body>
+        <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+                <![CDATA[
+                ]]>
+            </xhtml>
+        </ST>
+    </body>
+    <addData>
+        <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+            <Method name="s88_state_machine">
+                <interface><returnType><BOOL /></returnType></interface>
+                <body>
+                <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">
+                        <![CDATA[
+start_conditions:= true;
+
+
+CASE stepnumber OF
+{{~ # loop over all the sequences ~}}
+{{~ for sequence_name in ['Idle', 'Starting', 'Execute', 'Pausing', 'Paused', 'Resuming', 'Completing', 'Completed', 'Holding', 'Held', 'Unholding', 'Stopping', 'Stopped', 'Aborting', 'Aborted', 'Resetting'] ~}}
+	{{~ sequence = phase_type.sequences_by_name[sequence_name] ~}}
+	{{~ if sequence         # checks if sequence is not null ~}}
+		{{~ # loop over all the steps ~}}
+		{{~ for step in sequence.ordered_steps ~}}
+    // {{sequence.name }} - Step {{ step.name }}
+    {{ step.name }}:
+        //================================
+        {{ comment_all_lines(step.comment) }}
+        //--------------------------------
+        {{ comment_all_lines(step.actions) }}
+        //================================
+        stepinfo:= TO_STRING("S{{ step.name }}$L");
+        stepinfo := CONCAT(stepinfo, TO_STRING("{{ step.comment }}$L"));
+
+        // Action
+			{{~ for action in step.continuous_actions ~}}
+				{{~ if action.condition == "" ~}}
+        {{ tia_convert_action(action) }};
+				{{~ else ~}}
+				  {{~ if action.has_delay ~}}
+        StepTimer_{{ action.delay_timer_no }}.PT := T#1ms * REAL_TO_DINT({{ action.delay_timer_setting }} * {{ action.delay_multiplier }});
+        StepTimer_{{ action.delay_timer_no }}.IN := NOT #PL_Global.ST.NewStep AND {{ tia_convert_condition(action.condition) }};
+        StepTimer_{{ action.delay_timer_no }}();
+        IF (StepTimer_{{ action.delay_timer_no }}.Q) THEN
+            {{ tia_convert_action(action) }};
+        END_IF;
+				  {{~ else ~}}
+        IF ({{ tia_convert_condition(action.condition) }}) THEN
+            {{ tia_convert_action(action) }};
+        END_IF;
+				  {{~ end ~}}
+				{{~ end ~}}
+			{{~ end ~}}
+
+            {{~ for transition in step.ordered_transitions ~}}
+        // Transition {{ step.name }} to {{ transition.target }}
+        stepinfo := CONCAT(stepinfo, TO_STRING("---$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("T{{transition.target}}: {{ transition.condition_code }}$L"));
+        {{ comment_all_lines(transition.comment) }}
+        IF (
+            {{ tia_convert_condition(transition.condition_code) }}
+        ) THEN
+            stepnumber := {{ transition.target }};
+            state := PhaseState.{{ transition.target_sequence_name }}; // {{ transition.target_sequence_name }}
+        END_IF;
+
+			{{~ end # for loop of transitions ~}}
+
+		{{~ end # for loop of steps ~}}
+	{{~ end # if sequence exists ~}}
+{{~ end # for loop of sequences ~}}
+END_CASE
+
+                ]]>
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+        <Method name="MTP_Aborted">
+            <interface><returnType><BOOL /></returnType></interface>
+            <body>
+                <ST>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.aborted;
+// call general pre-state-machine logic
+pre_state_machine();
+// call the S88 state machine
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to resetting
+MTP_Aborted := (state = PhaseState.resetting);
+                  </xhtml>
+                </ST>
+            </body>
+        </Method>
+    </data>
+
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+      <Method name="MTP_Aborting">
+        <interface><returnType><BOOL /></returnType></interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.aborting;
+// call general pre-state-machine logic
+pre_state_machine();
+// initialize stepnumber if first scan in this state
+IF mtp_state_has_changed THEN
+	stepnumber:= {{ phase_type.first_aborting_step }};
+END_IF
+// call the S88 state machine
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to aborted
+MTP_Aborting := (state = PhaseState.aborted);
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+      <Method name="MTP_Completed">
+        <interface><returnType><BOOL /></returnType></interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.completed;
+// call general pre-state-machine logic
+pre_state_machine();
+// call the S88 state machine
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to resetting
+MTP_Completed := (state = PhaseState.resetting);
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+      <Method name="MTP_Completing">
+        <interface><returnType><BOOL /></returnType></interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.completing;
+// call general pre-state-machine logic
+pre_state_machine();
+// initialize stepnumber if first scan in this state
+IF mtp_state_has_changed THEN
+	stepnumber:= {{ phase_type.first_completing_step }};
+END_IF
+// call the S88 state machine
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to completed
+MTP_Completing := (state = PhaseState.completed);
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+      <Method name="MTP_Execute">
+        <interface><returnType><BOOL /></returnType></interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.execute;
+// call general pre-state-machine logic
+pre_state_machine();
+// call the S88 state machine
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to completing
+MTP_Execute := (state = PhaseState.completing);
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+      <Method name="MTP_Held">
+        <interface><returnType><BOOL /></returnType></interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.held;
+// call general pre-state-machine logic
+pre_state_machine();
+// call the S88 state machine
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to unholding
+MTP_Held := (state = PhaseState.unholding);
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+      <Method name="MTP_Holding">
+        <interface><returnType><BOOL /></returnType></interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.holding;
+// call general pre-state-machine logic
+pre_state_machine();
+// initialize stepnumber if first scan in this state
+IF mtp_state_has_changed THEN
+	stepnumber:= {{ phase_type.first_holding_step }};
+END_IF
+// call the S88 state machine
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to held
+MTP_Holding := (state = PhaseState.held);
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+      <Method name="MTP_Paused">
+        <interface><returnType><BOOL /></returnType></interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.paused;
+// call general pre-state-machine logic
+pre_state_machine();
+// call the S88 state machine
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to resuming
+MTP_Paused := (state = PhaseState.resuming);
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+      <Method name="MTP_Pausing">
+        <interface><returnType><BOOL /></returnType></interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.pausing;
+// call general pre-state-machine logic
+pre_state_machine();
+// initialize stepnumber if first scan in this state
+IF mtp_state_has_changed THEN
+	stepnumber:= {{ phase_type.first_pausing_step }};
+END_IF
+// call the S88 state machine
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to paused
+MTP_Pausing := (state = PhaseState.paused);
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+      <Method name="MTP_Resetting">
+        <interface><returnType><BOOL /></returnType></interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.resetting;
+// call general pre-state-machine logic
+pre_state_machine();
+// call the S88 state machine
+// initialize stepnumber if first scan in this state
+IF mtp_state_has_changed THEN
+	stepnumber:= {{ phase_type.first_resetting_step }};
+END_IF
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to idle
+MTP_Resetting := (state = PhaseState.idle);
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+      <Method name="MTP_Resuming">
+        <interface><returnType><BOOL /></returnType></interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.resuming;
+// call general pre-state-machine logic
+pre_state_machine();
+// initialize stepnumber if first scan in this state
+IF mtp_state_has_changed THEN
+	stepnumber:= {{ phase_type.first_resuming_step }};
+END_IF
+// call the S88 state machine
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to execute
+MTP_Resuming := (state = PhaseState.execute);
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+      <Method name="MTP_Starting">
+        <interface><returnType><BOOL /></returnType></interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.starting;
+// call general pre-state-machine logic
+pre_state_machine();
+// initialize stepnumber if first scan in this state
+IF mtp_state_has_changed THEN
+	stepnumber:= {{ phase_type.first_starting_step }};
+END_IF
+// call the S88 state machine
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to execute
+MTP_Starting := (state = PhaseState.execute);
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+      <Method name="MTP_Stopped">
+        <interface><returnType><BOOL /></returnType></interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.stopped;
+// call general pre-state-machine logic
+pre_state_machine();
+// call the S88 state machine
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to resetting
+MTP_Stopped := (state = PhaseState.resetting);
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+      <Method name="MTP_Stopping">
+        <interface><returnType><BOOL /></returnType></interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.stopping;
+// call general pre-state-machine logic
+pre_state_machine();
+// initialize stepnumber if first scan in this state
+IF mtp_state_has_changed THEN
+	stepnumber:= {{ phase_type.first_stopping_step }};
+END_IF
+// call the S88 state machine
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to stopped
+MTP_Stopping := (state = PhaseState.stopped);
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+
+    <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+      <Method name="MTP_Unholding">
+        <interface><returnType><BOOL /></returnType></interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// store MTP state
+mtp_state := PhaseState.unholding;
+// call general pre-state-machine logic
+pre_state_machine();
+// initialize stepnumber if first scan in this state
+IF mtp_state_has_changed THEN
+	stepnumber:= {{ phase_type.first_unholding_step }};
+END_IF
+// call the S88 state machine
+s88_state_machine();
+// call general post-state-machine-logic
+post_state_machine();
+// jump to execute
+MTP_Unholding := (state = PhaseState.execute);
+            </xhtml>
+          </ST>
+        </body>
+      </Method>
+    </data>
+    </addData>
+</pou>

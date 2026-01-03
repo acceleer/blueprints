@@ -1,0 +1,34 @@
+{{~
+    set_name('Call_CMs_' + cm_type.name)
+    set_folder('CMInstances')
+~}}
+<pou name="Call_CMs_{{ cm_type.name }}" pouType="function">
+    <documentation>
+        Call CM Instances - {{ cm_type.name }}
+    </documentation>
+    <interface>
+        <returnType>
+            <BOOL />
+        </returnType>
+    </interface>
+    <body>
+        <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+{{~ for cm_instance in cm_instances ~}}
+// {{ cm_instance.comment }}
+_{{ cm_instance.name }}(
+    {{~ for link in cm_instance.block_links ~}}
+        {{~ if ['alarmHigh', 'warningHigh', 'toleranceHigh', 'toleranceLow', 'warningLow', 'alarmLow'] | !array.contains link.connection_left ~}}
+    {{ link.connection_left }} := {{ if !link.is_value }}"{{ end }}{{ link.connection_right }}{{ if !link.is_value }}"{{ end }},
+        {{~ end ~}}
+	{{~ end ~}}
+    {{~ if ['AnalogValve', 'ReversingMotor', 'SolenoidValve', 'VFD'] | array.contains cm_type.name ~}}
+    simulate := simulate_all,
+    {{~ end ~}}
+    MTPBase := {{ cm_instance.name }}
+);
+{{~ end ~}}
+            </xhtml>
+        </ST>
+    </body>
+</pou>

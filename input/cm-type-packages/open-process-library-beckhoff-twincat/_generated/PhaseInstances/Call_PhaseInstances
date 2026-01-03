@@ -1,0 +1,40 @@
+<pou name="Call_PhaseInstances" pouType="function">
+    <documentation>
+        Call Phase Instances
+    </documentation>
+    <interface>
+        <returnType>
+            <BOOL />
+        </returnType>
+    </interface>
+    <body>
+        <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+                <![CDATA[
+
+// demo phase instance
+demoPhaseInstance(
+        PV4712_02 := _PV4712_02,
+        PICSA4712_02 := _PT4712_02,
+        DosingValve := _XV-001,
+        P4712 := _P4712,
+        UC4712_03 := _TICSA4750_03
+);
+
+// Dosing A
+Dosing_A(
+);
+
+// Dosing B
+Dosing_B(
+);
+
+// Filling
+Filling(
+);
+
+                ]]>
+            </xhtml>
+        </ST>
+    </body>
+</pou>

@@ -1,0 +1,16 @@
+{{~
+    set_name('GVL_CMs_' + cm_type.name)
+    set_folder('CMInstances')
+~}}
+<globalVars name="GVL_CMs_{{ cm_type.name }}">
+{{~# loop over all CMInstances in the CMType #~}}
+{{~# add _ because can not start with number, and sometimes a tag starts with a number, like 20XV003 #~}}
+{{~ for cm_instance in cm_instances ~}}
+    <variable name="_{{ cm_instance.name }}">
+        <type><derived name="{{ cm_type.name }}" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> {{ cm_instance.comment }}</xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+{{~ end ~}}
+</globalVars>

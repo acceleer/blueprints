@@ -1,0 +1,15 @@
+{{~
+    set_name('GVL_PhaseInstances')
+    set_folder('PhaseInstances')
+~}}
+<globalVars name="GVL_PhaseInstances">
+{{~# loop over all PhaseInstances in the SpecLib #~}}
+{{~ for phase_instance in model.ordered_phase_instances ~}}
+    <variable name="{{ phase_instance.name }}">
+        <type><derived name="PH_{{ phase_instance.phase_type_name }}" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> {{ phase_instance.comment }}</xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+{{~ end ~}}
+</globalVars>

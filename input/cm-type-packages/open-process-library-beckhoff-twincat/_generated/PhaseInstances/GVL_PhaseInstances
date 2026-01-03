@@ -1,0 +1,26 @@
+<globalVars name="GVL_PhaseInstances">
+    <variable name="demoPhaseInstance">
+        <type><derived name="PH_DemoPhase" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> demo phase instance</xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+    <variable name="Dosing_A">
+        <type><derived name="PH_Dosing" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> Dosing A</xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+    <variable name="Dosing_B">
+        <type><derived name="PH_Dosing" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> Dosing B</xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+    <variable name="Filling">
+        <type><derived name="PH_Filling" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> Filling</xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+</globalVars>

@@ -1,0 +1,8 @@
+<globalVars name="GVL_CMs_DigitalMeasurement">
+    <variable name="_HV4750_01">
+        <type><derived name="DigitalMeasurement" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> </xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+</globalVars>

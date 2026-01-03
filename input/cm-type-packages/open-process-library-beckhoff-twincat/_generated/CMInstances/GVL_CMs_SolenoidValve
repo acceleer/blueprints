@@ -1,0 +1,8 @@
+<globalVars name="GVL_CMs_SolenoidValve">
+    <variable name="_XV-001">
+        <type><derived name="SolenoidValve" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> </xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+</globalVars>

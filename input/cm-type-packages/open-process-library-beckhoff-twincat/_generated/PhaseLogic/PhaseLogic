@@ -1,0 +1,105 @@
+<pou name="PhaseLogic" pouType="functionBlock">
+    <interface>
+
+        <localVars>
+            <variable name="dummy">
+                <type><BOOL /></type>
+                <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Used to keep the template for calling the phase instances clean</xhtml></documentation>
+            </variable>
+            <variable name="mtp_state">
+                <type><derived name="PhaseState" /></type>
+                <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">state that the MTP block last tried to execute</xhtml></documentation>
+            </variable>
+            <variable name="previous_mtp_state">
+                <type><derived name="PhaseState" /></type>
+                <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">previous mtp state (needed to detect a state change)</xhtml></documentation>
+            </variable>
+            <variable name="mtp_state_has_changed">
+              <type><BOOL /></type>
+              <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> shows the mtp state has changed since last scan. Can be used for example to set the first stepnumber in that state.</xhtml>
+              </documentation>
+            </variable>
+            <variable name="state">
+                <type><derived name="PhaseState" /></type>
+                <documentation>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml"> possible S88 states:
+0: idle
+17: starting
+1: running
+12: execute
+15: completing
+2: completed
+3: pausing
+4: paused
+13: resuming
+5: holding
+6: held
+14: unholding
+7: restarting
+8: stopping
+9: stopped
+10: aborting
+11: aborted
+16: resetting
+                  </xhtml>
+                </documentation>
+            </variable>
+            <variable name="stepnumber">
+                <type><INT /></type>
+            </variable>
+            <variable name="stepinfo">
+              <type><string length="1024" /></type>
+            </variable>
+            <variable name="message">
+                <type><INT /></type>
+            </variable>
+            <variable name="hold_condition">
+                <type><BOOL /></type>
+            </variable>
+        </localVars>
+
+    </interface>
+
+
+    <body>
+        <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// allowed transitions by the user
+// starting -> execute
+
+
+            </xhtml>
+        </ST>
+    </body>
+    <addData>
+          <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+            <Method name="pre_state_machine" ObjectId="84e5e353-5283-4598-986b-7cca1a5cded3">
+              <interface>
+                <returnType><BOOL /></returnType>
+              </interface>
+              <body>
+                <ST>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// detect change of state
+mtp_state_has_changed := mtp_state &lt;&gt; previous_mtp_state;
+                  </xhtml>
+                </ST>
+              </body>
+            </Method>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+            <Method name="post_state_machine" ObjectId="e0176327-b7fe-4b3f-b070-b3f8ee1b1c8a">
+              <interface>
+                <returnType><BOOL /></returnType>
+              </interface>
+              <body>
+                <ST>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// copy current to previous state
+previous_mtp_state:= mtp_state;</xhtml>
+                </ST>
+              </body>
+            </Method>
+          </data>
+  </addData>
+</pou>

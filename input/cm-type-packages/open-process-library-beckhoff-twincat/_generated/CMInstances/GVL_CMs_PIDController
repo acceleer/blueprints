@@ -1,0 +1,14 @@
+<globalVars name="GVL_CMs_PIDController">
+    <variable name="_PICSA4712_02">
+        <type><derived name="PIDController" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> </xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+    <variable name="_TICSA4750_03">
+        <type><derived name="PIDController" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> </xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+</globalVars>

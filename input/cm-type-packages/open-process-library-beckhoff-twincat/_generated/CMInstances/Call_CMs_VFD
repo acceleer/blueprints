@@ -1,0 +1,16 @@
+<pou name="Call_CMs_VFD" pouType="function">
+    <documentation>
+        Call CM Instances - VFD
+    </documentation>
+    <interface>
+        <returnType>
+            <BOOL />
+        </returnType>
+    </interface>
+    <body>
+        <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+            </xhtml>
+        </ST>
+    </body>
+</pou>

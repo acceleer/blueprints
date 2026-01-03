@@ -1,0 +1,14 @@
+<globalVars name="GVL_CMs_AnalogValve">
+    <variable name="_PV4712_02">
+        <type><derived name="AnalogValve" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> </xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+    <variable name="_TV4750_03">
+        <type><derived name="AnalogValve" /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> </xhtml></documentation>
+        <initialValue>
+        </initialValue>
+    </variable>
+</globalVars>

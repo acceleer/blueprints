@@ -1,0 +1,32 @@
+{{~
+    set_name('Call_PhaseInstances')
+    set_folder('PhaseInstances')
+~}}
+<pou name="Call_PhaseInstances" pouType="function">
+    <documentation>
+        Call Phase Instances
+    </documentation>
+    <interface>
+        <returnType>
+            <BOOL />
+        </returnType>
+    </interface>
+    <body>
+        <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+                <![CDATA[
+
+{{~ for phase_instance in model.ordered_phase_instances ~}}
+// {{ phase_instance.comment }}
+{{ phase_instance.name }}(
+    {{~ for linked_cm in phase_instance.linked_cm_instances ~}}
+        {{ linked_cm.key }} := _{{ linked_cm.value.name }}{{ if !for.last}},{{end}}
+    {{~ end ~}}
+);
+
+{{~ end ~}}
+                ]]>
+            </xhtml>
+        </ST>
+    </body>
+</pou>

@@ -1,0 +1,48 @@
+{
+    "Templates": [
+        {
+            "Name": "GlobalVarsAcceleer.xml",
+            "Type": "program"
+        },
+        {
+            "Name": "MTPPidCtrlHelper.xml",
+            "Type": "program"
+        },
+        {
+            "Name": "GlobalVarsCmInstances.xml",
+            "Type": "cm_type"
+        },
+        {
+            "Name": "CallCmInstances.xml",
+            "Type": "cm_type"
+        },
+        {
+            "Name": "EnumPhaseState.xml",
+            "Type": "program"
+        },
+        {
+            "Name": "GlobalVarsPhaseInstances.xml",
+            "Type": "program"
+        },
+        {
+            "Name": "PhaseLogic.xml",
+            "Type": "program"
+        },
+        {
+            "Name": "PhaseType.xml",
+            "Type": "phase_type"
+        },
+        {
+            "Name": "CallPhaseInstances.xml",
+            "Type": "program"
+        },
+        {
+            "Name": "MTPProcedure.xml",
+            "Type": "mtp_procedure"
+        },
+        {
+            "Name": "CallAllGenerated.xml",
+            "Type": "program"
+        }
+    ]
+}

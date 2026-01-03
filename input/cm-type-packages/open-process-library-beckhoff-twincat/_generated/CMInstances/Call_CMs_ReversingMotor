@@ -1,0 +1,26 @@
+<pou name="Call_CMs_ReversingMotor" pouType="function">
+    <documentation>
+        Call CM Instances - ReversingMotor
+    </documentation>
+    <interface>
+        <returnType>
+            <BOOL />
+        </returnType>
+    </interface>
+    <body>
+        <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// 
+_P4711(
+    simulate := simulate_all,
+    MTPBase := P4711
+);
+// 
+_P4712(
+    simulate := simulate_all,
+    MTPBase := P4712
+);
+            </xhtml>
+        </ST>
+    </body>
+</pou>

@@ -1,0 +1,10 @@
+{{~
+    set_name('GVL_Acceleer')
+    set_folder('')
+~}}
+<globalVars name="GVL_Acceleer">
+    <variable name="simulate_all">
+        <type><BOOL /></type>
+        <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">activate this to put the ENTIRE program into simulation mode</xhtml></documentation>
+    </variable>
+</globalVars>

@@ -1,0 +1,26 @@
+{{~
+    set_name('Call_All_Generated')
+    set_folder('')
+~}}
+<pou name="Call_All_Generated" pouType="function">
+    <documentation>
+        Call all generated functions
+    </documentation>
+    <interface>
+        <returnType>
+            <BOOL />
+        </returnType>
+    </interface>
+    <body>
+        <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+{{~ for cm_type in cm_types ~}}
+// {{ cm_type.comment }}
+Call_CMs_{{ cm_type.name }}();
+{{~ end ~}}
+// call phase instances
+Call_PhaseInstances();
+            </xhtml>
+        </ST>
+    </body>
+</pou>

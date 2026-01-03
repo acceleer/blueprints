@@ -1,0 +1,24 @@
+<pou name="Call_CMs_PIDController" pouType="function">
+    <documentation>
+        Call CM Instances - PIDController
+    </documentation>
+    <interface>
+        <returnType>
+            <BOOL />
+        </returnType>
+    </interface>
+    <body>
+        <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// 
+_PICSA4712_02(
+    MTPBase := PICSA4712_02
+);
+// 
+_TICSA4750_03(
+    MTPBase := TICSA4750_03
+);
+            </xhtml>
+        </ST>
+    </body>
+</pou>

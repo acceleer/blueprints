@@ -1,0 +1,31 @@
+<pou name="Call_CMs_AnalogMeasurement" pouType="function">
+    <documentation>
+        Call CM Instances - AnalogMeasurement
+    </documentation>
+    <interface>
+        <returnType>
+            <BOOL />
+        </returnType>
+    </interface>
+    <body>
+        <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// 
+_PT4712_01(
+    rawValue := "PT4712_01.rawValue",
+    MTPBase := PT4712_01
+);
+// 
+_PT4712_02(
+    rawValue := "PT4712_02.rawValue",
+    MTPBase := PT4712_02
+);
+// 
+_TT4750_03(
+    rawValue := "TT4750_03.rawValue",
+    MTPBase := TT4750_03
+);
+            </xhtml>
+        </ST>
+    </body>
+</pou>

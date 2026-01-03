@@ -1,0 +1,40 @@
+<dataType name="PhaseState">
+    <baseType>
+        <enum>
+            <values>
+                <value name="stopped" value="4" />
+                <value name="starting" value="8" />
+                <value name="idle" value="16" />
+                <value name="paused" value="32" />
+                <value name="execute" value="64" />
+                <value name="stopping" value="128" />
+                <value name="aborting" value="256" />
+                <value name="aborted" value="512" />
+                <value name="holding" value="1024" />
+                <value name="held" value="2048" />
+                <value name="unholding" value="4096" />
+                <value name="pausing" value="8192" />
+                <value name="resuming" value="16384" />
+                <value name="resetting" value="32768" />
+                <value name="completing" value="65536" />
+                <value name="completed" value="131072" />
+                <value name="running" value="262144" />
+                <value name="restarting" value="524288" />
+                <value name="suspending" value="1048576" />
+                <value name="suspended" value="2097152" />
+                <value name="unsuspending" value="4194304" />
+                <value name="clearing" value="8388608" />
+            </values>
+            <baseType><UDINT /></baseType>
+        </enum>
+    </baseType>
+    <addData>
+        <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+        <Attributes>
+            <Attribute Name="qualified_only" Value="" />
+            <Attribute Name="strict" Value="" />
+            <Attribute Name="to_string" Value="" />
+        </Attributes>
+        </data>
+    </addData>
+</dataType>
