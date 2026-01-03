@@ -60,3 +60,19 @@ There is a collaborative and convenient GUI Editor available when using the [Acc
 
 **Q: Is there a community edition?**  
 **A:** Yes, reserved for open-source and educational projects.
+
+# Target systems/folder
+
+## ./output/siemens-tia
+
+Generates the PLC code for Siemens TIA in SCL.
+Based on the templates in:
+./input/template-packages/siemens-tia-cm
+./input/template-packages/siemens-tia-main
+
+## ./output/mtp
+
+Generates an MTP (Module Type Package) file.
+This will create two files:
+- mtp_export.mtp: the full mtp file, which can be imported in software packages supporting MTP workflows
+- mtp_export.xml: only for debugging, this is what is already packages inside mtp_export.mtp, but helps for faster analysis without having to unzip the mtp file
