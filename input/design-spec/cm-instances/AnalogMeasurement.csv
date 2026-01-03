@@ -1,0 +1,5 @@
+Name,#,Controller,Unit Instance,P&ID Drawing,Comment,rawValue,id,valueUnit,scaleMin,scaleMax,alarmHigh,warningHigh,toleranceHigh,toleranceLow,warningLow,alarmLow,alarmHighEn,warningHighEn,toleranceHighEn,toleranceLowEn,warningLowEn,alarmLowEn,deadband
+PT4712_01,15,PLC-01,T4750,DEXPI_Example_C01,,IW0,,,,,,,,,,,,,,,,,
+PT4712_02,16,PLC-01,T4750,DEXPI_Example_C01,,IW2,,,,,,,,,,,,,,,,,
+TT4750_03,17,PLC-01,T4750,DEXPI_Example_C01,,IW4,,,,,,,,,,,,,,,,,
+

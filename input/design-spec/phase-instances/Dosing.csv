@@ -1,0 +1,4 @@
+Name,#,Controller,Phase Type,Unit Instance,Unit Type,P&ID Drawing,Process Cell,Area,Comment
+Dosing_A,27,PLC-01,Dosing,R1000,Reactor,,,,Dosing A
+Dosing_B,28,PLC-01,Dosing,R1000,Reactor,,,,Dosing B
+
