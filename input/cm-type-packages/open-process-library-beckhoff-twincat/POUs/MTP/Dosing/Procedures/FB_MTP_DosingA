@@ -38,8 +38,8 @@
       <xhtml xmlns="http://www.w3.org/1999/xhtml" >
         <![CDATA[
 // Copy the MTP Service Parameters to the connected Phase Instance:
-Dosing_A.Temperature := Dosing.setTemperature.VExt;
 Dosing_A.Pressure := Dosing.setPressure.VExt;
+Dosing_A.Temperature := Dosing.setTemperature.VExt;
         ]]>
       </xhtml>
     </ST>
