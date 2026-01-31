@@ -1,0 +1,75 @@
+{{~
+  set_name('hierarchy-tree.json')
+  set_folder('')
+~}}
+{
+  "Organizations": {
+    "{{ organization.name }}": {
+      "_guid": "{{ organization.guid }}",
+      "{{ site.name }}": {
+        "_guid": "{{ site.guid }}",
+        "Areas": {
+{{~ for area in model.ordered_areas ~}}
+          "{{ area.name }}": {
+            "_guid": "{{ area.guid }}",
+            "number": {{ area.number ?? 0 }},
+            "shortName": "{{ area.short_name ?? "" }}",
+            "prefix": "{{ area.prefix ?? "" }}",
+            "ProcessCells": {
+  {{~ for pc in area.ordered_process_cells ~}}
+              "{{ pc.name }}": {
+                "_guid": "{{ pc.guid }}",
+                "number": {{ pc.number ?? 0 }},
+                "shortName": "{{ pc.short_name ?? "" }}",
+                "prefix": "{{ pc.prefix ?? "" }}",
+                "UnitInstances": {
+    {{~ for ui in pc.ordered_unit_instances ~}}
+                  "{{ ui.name }}": {
+                    "_guid": "{{ ui.guid }}",
+                    "number": {{ ui.number ?? 0 }},
+                    "unitType": "{{ ui.unit_type_name }}",
+                    "PhaseInstances": {
+      {{~ for pi in ui.ordered_phase_instances ~}}
+                      "{{ pi.name }}": {
+                        "_guid": "{{ pi.guid }}",
+                        "phaseType": "{{ pi.phase_type_name }}"
+                      }{{ if !for.last }},{{ end }}
+      {{~ end ~}}
+                    },
+                    "EMInstances": {
+      {{~ for ei in ui.ordered_em_instances ~}}
+                      "{{ ei.name }}": {
+                        "_guid": "{{ ei.guid }}",
+                        "emType": "{{ ei.em_type_name }}",
+                        "CMInstances": {
+        {{~ for ci in ei.ordered_cm_instances ~}}
+                          "{{ ci.name }}": {
+                            "_guid": "{{ ci.guid }}",
+                            "cmType": "{{ ci.cm_type_name }}"
+                          }{{ if !for.last }},{{ end }}
+        {{~ end ~}}
+                        }
+                      }{{ if !for.last }},{{ end }}
+      {{~ end ~}}
+                    },
+                    "CMInstances": {
+      {{~ for ci in ui.ordered_cm_instances ~}}
+                      "{{ ci.name }}": {
+                        "_guid": "{{ ci.guid }}",
+                        "cmType": "{{ ci.cm_type_name }}"
+                      }{{ if !for.last }},{{ end }}
+      {{~ end ~}}
+                    }
+                  }{{ if !for.last }},{{ end }}
+    {{~ end ~}}
+                }
+              }{{ if !for.last }},{{ end }}
+  {{~ end ~}}
+            }
+          }{{ if !for.last }},{{ end }}
+{{~ end ~}}
+        }
+      }
+    }
+  }
+}

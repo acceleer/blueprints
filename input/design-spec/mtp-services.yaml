@@ -2,6 +2,9 @@ services:
   - name: Dosing
     description: "Dosing Service"
     parameters:
+      - name: testReportPar
+        dataType: Real
+        parameterType: Report
       - name: setPressure
         dataType: Real
         parameterType: Config
@@ -12,17 +15,19 @@ services:
       - name: DosingA
         phaseInstance: Dosing_A
         parameterMappings:
-          - serviceParam: setTemperature
-            phaseVariable: Temperature
+          - serviceParam: testReportPar
+            phaseVariable: TestReportPar
           - serviceParam: setPressure
             phaseVariable: Pressure
+          - serviceParam: setTemperature
+            phaseVariable: Temperature
       - name: DosingB
         phaseInstance: Dosing_B
         parameterMappings:
-          - serviceParam: setTemperature
-            phaseVariable: Temperature
           - serviceParam: setPressure
             phaseVariable: Pressure
+          - serviceParam: setTemperature
+            phaseVariable: Temperature
   - name: Filling
     description: "Filling Service"
     parameters:

@@ -51,6 +51,9 @@
 
 
 ## Report Parameters
+| Name          | DataType | Comment               | Unit | Enum | 
+| ------------- | -------- | --------------------- | ---- | ---- | 
+| TestReportPar | Real     | Test Report Parameter |      |      | 
 
 
 ## Timers

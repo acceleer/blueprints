@@ -117,6 +117,12 @@
             </variable>
 
 
+            <variable name="TestReportParameter1 ">
+                <type><DINT /></type>
+                <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> TestReportParameter1 comment</xhtml></documentation>
+            </variable>
+
+
 
 
         </outputVars>
@@ -207,12 +213,12 @@ CASE stepnumber OF
     // Idle - Step 0
     0:
         //================================
-        
+        // Idle
         //--------------------------------
-        // # Idle
+        // 
         //================================
         stepinfo:= TO_STRING("S0$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Idle$L"));
 
         // Action
 
@@ -231,16 +237,15 @@ CASE stepnumber OF
     // Starting - Step 10
     10:
         //================================
-        
+        // Variables can be assigned new values through mathematical formula's
         //--------------------------------
-        // # Variables can be assigned new values through mathematical formula's
         // // simple calculation
         // TargetLevel = StartLevel + DosingQuantity - DosingOffset
         // // use of brackets
         // a = b * (c + d)
         //================================
         stepinfo:= TO_STRING("S10$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Variables can be assigned new values through mathematical formula's$L"));
 
         // Action
         TargetLevel := StartLevel + DosingQuantity - DosingOffset;
@@ -248,10 +253,10 @@ CASE stepnumber OF
 
         // Transition 10 to 20
         stepinfo := CONCAT(stepinfo, TO_STRING("---$L"));
-        stepinfo := CONCAT(stepinfo, TO_STRING("T20: false$L"));
-        
+        stepinfo := CONCAT(stepinfo, TO_STRING("T20: a > b * (c + d)$L"));
+        // Transitions can be comparisons of mathematical formula's
         IF (
-            false
+            a > b * (c + d)
         ) THEN
             stepnumber := 20;
             state := PhaseState.Starting; // Starting
@@ -259,10 +264,10 @@ CASE stepnumber OF
 
         // Transition 10 to 30
         stepinfo := CONCAT(stepinfo, TO_STRING("---$L"));
-        stepinfo := CONCAT(stepinfo, TO_STRING("T30: false$L"));
-        
+        stepinfo := CONCAT(stepinfo, TO_STRING("T30: a > 100$L"));
+        // One step can have multiple transitions to different target steps
         IF (
-            false
+            a > 100
         ) THEN
             stepnumber := 30;
             state := PhaseState.Starting; // Starting
@@ -270,10 +275,10 @@ CASE stepnumber OF
 
         // Transition 10 to 20
         stepinfo := CONCAT(stepinfo, TO_STRING("---$L"));
-        stepinfo := CONCAT(stepinfo, TO_STRING("T20: false$L"));
-        
+        stepinfo := CONCAT(stepinfo, TO_STRING("T20: a > 100 || b > 200$L"));
+        // Condition with boolean logic
         IF (
-            false
+            a > 100 OR b > 200
         ) THEN
             stepnumber := 20;
             state := PhaseState.Starting; // Starting
@@ -281,10 +286,10 @@ CASE stepnumber OF
 
         // Transition 10 to 20
         stepinfo := CONCAT(stepinfo, TO_STRING("---$L"));
-        stepinfo := CONCAT(stepinfo, TO_STRING("T20: false$L"));
-        
+        stepinfo := CONCAT(stepinfo, TO_STRING("T20: a > 100 || b > 200$L"));
+        // Conditions can be written over multiple lines for clarity
         IF (
-            false
+            a > 100 OR b > 200
         ) THEN
             stepnumber := 20;
             state := PhaseState.Starting; // Starting
@@ -292,10 +297,10 @@ CASE stepnumber OF
 
         // Transition 10 to 20
         stepinfo := CONCAT(stepinfo, TO_STRING("---$L"));
-        stepinfo := CONCAT(stepinfo, TO_STRING("T20: false$L"));
-        
+        stepinfo := CONCAT(stepinfo, TO_STRING("T20: a > 100 && ( b > 200 || c > 130 )$L"));
+        // Complex boolean logic can be indented for clarity
         IF (
-            false
+            a > 100 AND ( b > 200 OR c > 130 )
         ) THEN
             stepnumber := 20;
             state := PhaseState.Starting; // Starting
@@ -303,10 +308,10 @@ CASE stepnumber OF
 
         // Transition 10 to 20
         stepinfo := CONCAT(stepinfo, TO_STRING("---$L"));
-        stepinfo := CONCAT(stepinfo, TO_STRING("T20: false$L"));
-        
+        stepinfo := CONCAT(stepinfo, TO_STRING("T20: a > 100 && ( b > 200 || c > 130 )$L"));
+        // Comments can be added after each line to clarify
         IF (
-            false
+            a > 100 AND ( b > 200 OR c > 130 )
         ) THEN
             stepnumber := 20;
             state := PhaseState.Starting; // Starting
@@ -316,19 +321,21 @@ CASE stepnumber OF
     // Starting - Step 20
     20:
         //================================
-        
+        // Control Modules can be controlled like this:
+        // [verb] [ControlModuleName]
+        // The verbs are configured in the CM Type Package.
+        // ControlModuleName can be an abstract name, because one PhaseType can have multiple Phase Instances with diffent Control Module Instancees connected
         //--------------------------------
-        // # Control Modules can be controlled like this:
-        // # [verb] [ControlModuleName]
-        // # The verbs are configured in the CM Type Package.
-        // # ControlModuleName can be an abstract name, because one PhaseType can have multiple Phase Instances with diffent Control Module Instancees connected
         // // open a valve
         // open DosingValve
         // // close a valve
         // close DosingValve
         //================================
         stepinfo:= TO_STRING("S20$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Control Modules can be controlled like this:
+[verb] [ControlModuleName]
+The verbs are configured in the CM Type Package.
+ControlModuleName can be an abstract name, because one PhaseType can have multiple Phase Instances with diffent Control Module Instancees connected$L"));
 
         // Action
         DosingValve.open := true;
@@ -336,10 +343,13 @@ CASE stepnumber OF
 
         // Transition 20 to 30
         stepinfo := CONCAT(stepinfo, TO_STRING("---$L"));
-        stepinfo := CONCAT(stepinfo, TO_STRING("T30: false$L"));
-        
+        stepinfo := CONCAT(stepinfo, TO_STRING("T30: DosingValve.opened$L"));
+        // The status of Control Modules can be checked like this:
+        // [ControlModuleName] [status]
+        // The statuses are configured in the CM Type Package
+        // For example check if a valve is opened:
         IF (
-            false
+            DosingValve.opened
         ) THEN
             stepnumber := 30;
             state := PhaseState.Starting; // Starting
@@ -347,10 +357,10 @@ CASE stepnumber OF
 
         // Transition 20 to 30
         stepinfo := CONCAT(stepinfo, TO_STRING("---$L"));
-        stepinfo := CONCAT(stepinfo, TO_STRING("T30: false$L"));
-        
+        stepinfo := CONCAT(stepinfo, TO_STRING("T30: DosingValve.closed$L"));
+        // Check if a valve is closed:
         IF (
-            false
+            DosingValve.closed
         ) THEN
             stepnumber := 30;
             state := PhaseState.Starting; // Starting
@@ -358,10 +368,10 @@ CASE stepnumber OF
 
         // Transition 20 to 30
         stepinfo := CONCAT(stepinfo, TO_STRING("---$L"));
-        stepinfo := CONCAT(stepinfo, TO_STRING("T30: false$L"));
-        
+        stepinfo := CONCAT(stepinfo, TO_STRING("T30: DosingValve.opened && a > 100$L"));
+        // Example of a condition combining a status check with a value comparison:
         IF (
-            false
+            DosingValve.opened AND a > 100
         ) THEN
             stepnumber := 30;
             state := PhaseState.Starting; // Starting
@@ -371,14 +381,14 @@ CASE stepnumber OF
     // Starting - Step 30
     30:
         //================================
-        
+        // // Variables on Control Modules can be accessed directly
+        // (tip: the preference goes to configuring and using verbs and states if this makes things more readable for non-automation engineers)
         //--------------------------------
-        // # // Variables on Control Modules can be accessed directly
-        // # (tip: the preference goes to configuring and using verbs and states if this makes things more readable for non-automation engineers)
         // DosingValve.reset = true
         //================================
         stepinfo:= TO_STRING("S30$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("// Variables on Control Modules can be accessed directly
+(tip: the preference goes to configuring and using verbs and states if this makes things more readable for non-automation engineers)$L"));
 
         // Action
         DosingValve.reset := true;
@@ -398,12 +408,12 @@ CASE stepnumber OF
     // Starting - Step 40
     40:
         //================================
-        
+        // todo: AnalogMeasurement examples
         //--------------------------------
-        // # todo: AnalogMeasurement examples
+        // 
         //================================
         stepinfo:= TO_STRING("S40$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("todo: AnalogMeasurement examples$L"));
 
         // Action
 
@@ -422,12 +432,12 @@ CASE stepnumber OF
     // Starting - Step 50
     50:
         //================================
-        
+        // todo: AnalogValve examples
         //--------------------------------
-        // # todo: AnalogValve examples
+        // 
         //================================
         stepinfo:= TO_STRING("S50$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("todo: AnalogValve examples$L"));
 
         // Action
 
@@ -446,12 +456,12 @@ CASE stepnumber OF
     // Starting - Step 60
     60:
         //================================
-        
+        // todo: DigitalMeasurement examples
         //--------------------------------
-        // # todo: DigitalMeasurement examples
+        // 
         //================================
         stepinfo:= TO_STRING("S60$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("todo: DigitalMeasurement examples$L"));
 
         // Action
 
@@ -470,12 +480,12 @@ CASE stepnumber OF
     // Starting - Step 70
     70:
         //================================
-        
+        // todo: PIDController examples
         //--------------------------------
-        // # todo: PIDController examples
+        // 
         //================================
         stepinfo:= TO_STRING("S70$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("todo: PIDController examples$L"));
 
         // Action
 
@@ -494,12 +504,12 @@ CASE stepnumber OF
     // Starting - Step 80
     80:
         //================================
-        
+        // todo: ReversingMotor examples
         //--------------------------------
-        // # todo: ReversingMotor examples
+        // 
         //================================
         stepinfo:= TO_STRING("S80$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("todo: ReversingMotor examples$L"));
 
         // Action
 
@@ -518,12 +528,12 @@ CASE stepnumber OF
     // Starting - Step 90
     90:
         //================================
-        
+        // todo: VFD examples
         //--------------------------------
-        // # todo: VFD examples
+        // 
         //================================
         stepinfo:= TO_STRING("S90$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("todo: VFD examples$L"));
 
         // Action
 
@@ -542,14 +552,14 @@ CASE stepnumber OF
     // Starting - Step 100
     100:
         //================================
-        
+        // Actions can be conditionally executed:
+        // [action] if [condition]
         //--------------------------------
-        // # Actions can be conditionally executed:
-        // # [action] if [condition]
         // open DosingValve if a > 100
         //================================
         stepinfo:= TO_STRING("S100$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Actions can be conditionally executed:
+[action] if [condition]$L"));
 
         // Action
         IF (a > 100) THEN
@@ -571,32 +581,37 @@ CASE stepnumber OF
     // Starting - Step 110
     110:
         //================================
-        
+        // Conditional actions can also have a delay: the condition needs to be active for a delaytime before the action is  executed
+        // [action] if [condition] for [delay][timeUnit]
+        // [timeUnit] options: ms, s, min, h, days
+        // If delay is a variable then [timeUnit] is not needed (it will be deducted from the unit configured at the variable)
+        // tip: hover over the action line to see the DelayMultiplier to calculate milliseconds, as well as the timer number that will be used when generating the code
         //--------------------------------
-        // # Conditional actions can also have a delay: the condition needs to be active for a delaytime before the action is  executed
-        // # [action] if [condition] for [delay][timeUnit]
-        // # [timeUnit] options: ms, s, min, h, days
-        // # If delay is a variable then [timeUnit] is not needed (it will be deducted from the unit configured at the variable)
-        // # tip: hover over the action line to see the DelayMultiplier to calculate milliseconds, as well as the timer number that will be used when generating the code
         // open DosingValve if a > 100 for 5s
         //================================
         stepinfo:= TO_STRING("S110$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Conditional actions can also have a delay: the condition needs to be active for a delaytime before the action is  executed
+[action] if [condition] for [delay][timeUnit]
+[timeUnit] options: ms, s, min, h, days
+If delay is a variable then [timeUnit] is not needed (it will be deducted from the unit configured at the variable)
+tip: hover over the action line to see the DelayMultiplier to calculate milliseconds, as well as the timer number that will be used when generating the code$L"));
 
         // Action
-        StepTimer_2.PT := T#1ms * REAL_TO_DINT(5 * 1000);
-        StepTimer_2.IN := NOT #PL_Global.ST.NewStep AND a > 100;
-        StepTimer_2();
-        IF (StepTimer_2.Q) THEN
+        StepTimer_1.PT := T#1ms * REAL_TO_DINT(5 * 1000);
+        StepTimer_1.IN := NOT #PL_Global.ST.NewStep AND a > 100;
+        StepTimer_1();
+        IF (StepTimer_1.Q) THEN
             DosingValve.open := true;
         END_IF;
 
         // Transition 110 to 1000
         stepinfo := CONCAT(stepinfo, TO_STRING("---$L"));
-        stepinfo := CONCAT(stepinfo, TO_STRING("T1000: false$L"));
-        
+        stepinfo := CONCAT(stepinfo, TO_STRING("T1000: DosingValve.opened$L"));
+        // conditions in the transitions can also have delays, just like in the actions
+        // NOTE: the delay can only be added at the end and applies to the entire condition.
+        // If separate delays are needed for parts of a condition then make separate actions to intermediate variables.
         IF (
-            false
+            DosingValve.opened
         ) THEN
             stepnumber := 1000;
             state := PhaseState.Execute; // Execute
@@ -606,12 +621,12 @@ CASE stepnumber OF
     // Execute - Step 1000
     1000:
         //================================
-        
+        // Execute
         //--------------------------------
-        // # Execute
+        // 
         //================================
         stepinfo:= TO_STRING("S1000$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Execute$L"));
 
         // Action
 
@@ -630,12 +645,12 @@ CASE stepnumber OF
     // Pausing - Step 4000
     4000:
         //================================
-        
+        // Pausing
         //--------------------------------
-        // # Pausing
+        // 
         //================================
         stepinfo:= TO_STRING("S4000$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Pausing$L"));
 
         // Action
 
@@ -654,12 +669,12 @@ CASE stepnumber OF
     // Paused - Step 4500
     4500:
         //================================
-        
+        // Paused
         //--------------------------------
-        // # Paused
+        // 
         //================================
         stepinfo:= TO_STRING("S4500$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Paused$L"));
 
         // Action
 
@@ -678,12 +693,12 @@ CASE stepnumber OF
     // Resuming - Step 4600
     4600:
         //================================
-        
+        // Resuming
         //--------------------------------
-        // # Resuming
+        // 
         //================================
         stepinfo:= TO_STRING("S4600$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Resuming$L"));
 
         // Action
 
@@ -702,12 +717,12 @@ CASE stepnumber OF
     // Completing - Step 2000
     2000:
         //================================
-        
+        // Completing
         //--------------------------------
-        // # Completing
+        // 
         //================================
         stepinfo:= TO_STRING("S2000$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Completing$L"));
 
         // Action
 
@@ -726,12 +741,12 @@ CASE stepnumber OF
     // Completed - Step 2100
     2100:
         //================================
-        
+        // Completed
         //--------------------------------
-        // # Completed
+        // 
         //================================
         stepinfo:= TO_STRING("S2100$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Completed$L"));
 
         // Action
 
@@ -750,12 +765,12 @@ CASE stepnumber OF
     // Holding - Step 5000
     5000:
         //================================
-        
+        // Holding
         //--------------------------------
-        // # Holding
+        // 
         //================================
         stepinfo:= TO_STRING("S5000$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Holding$L"));
 
         // Action
 
@@ -774,12 +789,12 @@ CASE stepnumber OF
     // Held - Step 5500
     5500:
         //================================
-        
+        // Held
         //--------------------------------
-        // # Held
+        // 
         //================================
         stepinfo:= TO_STRING("S5500$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Held$L"));
 
         // Action
 
@@ -798,12 +813,12 @@ CASE stepnumber OF
     // Unholding - Step 5600
     5600:
         //================================
-        
+        // Unholding
         //--------------------------------
-        // # Unholding
+        // 
         //================================
         stepinfo:= TO_STRING("S5600$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Unholding$L"));
 
         // Action
 
@@ -822,12 +837,12 @@ CASE stepnumber OF
     // Stopping - Step 6000
     6000:
         //================================
-        
+        // Stopping
         //--------------------------------
-        // # Stopping
+        // 
         //================================
         stepinfo:= TO_STRING("S6000$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Stopping$L"));
 
         // Action
 
@@ -846,12 +861,12 @@ CASE stepnumber OF
     // Stopped - Step 6500
     6500:
         //================================
-        
+        // Stopped
         //--------------------------------
-        // # Stopped
+        // 
         //================================
         stepinfo:= TO_STRING("S6500$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Stopped$L"));
 
         // Action
 
@@ -870,12 +885,12 @@ CASE stepnumber OF
     // Aborting - Step 7000
     7000:
         //================================
-        
+        // Aborting
         //--------------------------------
-        // # Aborting
+        // 
         //================================
         stepinfo:= TO_STRING("S7000$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Aborting$L"));
 
         // Action
 
@@ -894,12 +909,12 @@ CASE stepnumber OF
     // Aborted - Step 7500
     7500:
         //================================
-        
+        // Aborted
         //--------------------------------
-        // # Aborted
+        // 
         //================================
         stepinfo:= TO_STRING("S7500$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Aborted$L"));
 
         // Action
 
@@ -918,12 +933,12 @@ CASE stepnumber OF
     // Resetting - Step 3000
     3000:
         //================================
-        
+        // Resetting
         //--------------------------------
-        // # Resetting
+        // 
         //================================
         stepinfo:= TO_STRING("S3000$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Resetting$L"));
 
         // Action
 

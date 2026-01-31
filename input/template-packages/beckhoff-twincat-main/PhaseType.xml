@@ -76,6 +76,15 @@
             {{~ end ~}}
 
 
+            {{~## add all the report parameters from the phase type ##~}}
+            {{~ for item in phase_type.report_parameters ~}}
+            <variable name="{{ item.name}} ">
+                <type><{{ map_data_type(item.data_type, 'BOOL', 'DINT', 'REAL') }} /></type>
+                <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> {{ item.single_line_comment }}</xhtml></documentation>
+            </variable>
+            {{~ end ~}}
+
+
             {{~ # add outputs for the auto-generated timers -}}
             {{~ for item in phase_type.ordered_timer_definitions ~}}
             <variable name="{{ item.name}} ">

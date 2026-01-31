@@ -14,11 +14,11 @@
 
 // demo phase instance
 demoPhaseInstance(
-        PV4712_02 := _PV4712_02,
         DosingValve := _XV-001,
+        PV4712_02 := _PV4712_02,
+        P4712 := _P4712,
         PICSA4712_02 := _PT4712_02,
-        UC4712_03 := _TICSA4750_03,
-        P4712 := _P4712
+        UC4712_03 := _TICSA4750_03
 );
 
 // Dosing A

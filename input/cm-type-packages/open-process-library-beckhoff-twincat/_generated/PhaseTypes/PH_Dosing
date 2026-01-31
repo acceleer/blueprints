@@ -85,6 +85,12 @@
             </variable>
 
 
+            <variable name="TestReportPar ">
+                <type><REAL /></type>
+                <documentation><xhtml xmlns="http://www.w3.org/1999/xhtml"> Test Report Parameter</xhtml></documentation>
+            </variable>
+
+
 
 
         </outputVars>
@@ -147,12 +153,12 @@ CASE stepnumber OF
     // Idle - Step 0
     0:
         //================================
-        
+        // Idle
         //--------------------------------
-        // # Idle
+        // 
         //================================
         stepinfo:= TO_STRING("S0$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Idle$L"));
 
         // Action
 
@@ -171,12 +177,12 @@ CASE stepnumber OF
     // Starting - Step 10
     10:
         //================================
-        
+        // Starting
         //--------------------------------
-        // # Starting
+        // 
         //================================
         stepinfo:= TO_STRING("S10$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Starting$L"));
 
         // Action
 
@@ -195,12 +201,12 @@ CASE stepnumber OF
     // Execute - Step 1000
     1000:
         //================================
-        
+        // Execute
         //--------------------------------
-        // # Execute
+        // 
         //================================
         stepinfo:= TO_STRING("S1000$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Execute$L"));
 
         // Action
 
@@ -219,12 +225,12 @@ CASE stepnumber OF
     // Pausing - Step 4000
     4000:
         //================================
-        
+        // Pausing
         //--------------------------------
-        // # Pausing
+        // 
         //================================
         stepinfo:= TO_STRING("S4000$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Pausing$L"));
 
         // Action
 
@@ -243,12 +249,12 @@ CASE stepnumber OF
     // Paused - Step 4500
     4500:
         //================================
-        
+        // Paused
         //--------------------------------
-        // # Paused
+        // 
         //================================
         stepinfo:= TO_STRING("S4500$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Paused$L"));
 
         // Action
 
@@ -267,12 +273,12 @@ CASE stepnumber OF
     // Resuming - Step 4600
     4600:
         //================================
-        
+        // Resuming
         //--------------------------------
-        // # Resuming
+        // 
         //================================
         stepinfo:= TO_STRING("S4600$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Resuming$L"));
 
         // Action
 
@@ -291,12 +297,12 @@ CASE stepnumber OF
     // Completing - Step 2000
     2000:
         //================================
-        
+        // Completing
         //--------------------------------
-        // # Completing
+        // 
         //================================
         stepinfo:= TO_STRING("S2000$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Completing$L"));
 
         // Action
 
@@ -315,12 +321,12 @@ CASE stepnumber OF
     // Completed - Step 2100
     2100:
         //================================
-        
+        // Completed
         //--------------------------------
-        // # Completed
+        // 
         //================================
         stepinfo:= TO_STRING("S2100$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Completed$L"));
 
         // Action
 
@@ -339,12 +345,12 @@ CASE stepnumber OF
     // Holding - Step 5000
     5000:
         //================================
-        
+        // Holding
         //--------------------------------
-        // # Holding
+        // 
         //================================
         stepinfo:= TO_STRING("S5000$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Holding$L"));
 
         // Action
 
@@ -363,12 +369,12 @@ CASE stepnumber OF
     // Held - Step 5500
     5500:
         //================================
-        
+        // Held
         //--------------------------------
-        // # Held
+        // 
         //================================
         stepinfo:= TO_STRING("S5500$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Held$L"));
 
         // Action
 
@@ -387,12 +393,12 @@ CASE stepnumber OF
     // Unholding - Step 5600
     5600:
         //================================
-        
+        // Unholding
         //--------------------------------
-        // # Unholding
+        // 
         //================================
         stepinfo:= TO_STRING("S5600$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Unholding$L"));
 
         // Action
 
@@ -411,12 +417,12 @@ CASE stepnumber OF
     // Stopping - Step 6000
     6000:
         //================================
-        
+        // Stopping
         //--------------------------------
-        // # Stopping
+        // 
         //================================
         stepinfo:= TO_STRING("S6000$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Stopping$L"));
 
         // Action
 
@@ -435,12 +441,12 @@ CASE stepnumber OF
     // Stopped - Step 6500
     6500:
         //================================
-        
+        // Stopped
         //--------------------------------
-        // # Stopped
+        // 
         //================================
         stepinfo:= TO_STRING("S6500$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Stopped$L"));
 
         // Action
 
@@ -459,12 +465,12 @@ CASE stepnumber OF
     // Aborting - Step 7000
     7000:
         //================================
-        
+        // Aborting
         //--------------------------------
-        // # Aborting
+        // 
         //================================
         stepinfo:= TO_STRING("S7000$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Aborting$L"));
 
         // Action
 
@@ -483,12 +489,12 @@ CASE stepnumber OF
     // Aborted - Step 7500
     7500:
         //================================
-        
+        // Aborted
         //--------------------------------
-        // # Aborted
+        // 
         //================================
         stepinfo:= TO_STRING("S7500$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Aborted$L"));
 
         // Action
 
@@ -507,12 +513,12 @@ CASE stepnumber OF
     // Resetting - Step 3000
     3000:
         //================================
-        
+        // Resetting
         //--------------------------------
-        // # Resetting
+        // 
         //================================
         stepinfo:= TO_STRING("S3000$L");
-        stepinfo := CONCAT(stepinfo, TO_STRING("$L"));
+        stepinfo := CONCAT(stepinfo, TO_STRING("Resetting$L"));
 
         // Action
 

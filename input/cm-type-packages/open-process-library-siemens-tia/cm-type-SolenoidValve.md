@@ -32,21 +32,21 @@
 
 
 ## Outputs
-| Name          | Suffix         | DataType | IO Type | Comment                                    | Primary | IsError | Configurable | True Words | False Words | Loopback | Enum | 
-| ------------- | -------------- | -------- | ------- | ------------------------------------------ | ------- | ------- | ------------ | ---------- | ----------- | -------- | ---- | 
-| openCommand   | .openCommand   | DO       |         | open command to device                     | False   | False   | False        |            |             |          |      | 
-| pulseOpen     | .pulseOpen     | Bool     |         | one cycle pulse when starting open command | False   | False   | False        |            |             |          |      | 
-| pulseClose    | .pulseClose    | Bool     |         | one cycle pulse when ending open command   | False   | False   | False        |            |             |          |      | 
-| remote        | .remote        | Bool     |         | 0: operator/local, 1: automatic/remote     | False   | False   | False        |            |             |          |      | 
-| operatorMode  | .operatorMode  | Bool     |         | Operator Mode                              | False   | False   | False        |            |             |          |      | 
-| automaticMode | .automaticMode | Bool     |         | Automatic Mode                             | False   | False   | False        |            |             |          |      | 
-| offlineMode   | .offlineMode   | Bool     |         | Offline Mode                               | False   | False   | False        |            |             |          |      | 
-| outside       | .outside       | Bool     |         | Outside mode                               | False   | False   | False        |            |             |          |      | 
-| error         | .error         | Bool     |         | Any error active                           | False   | False   | False        |            |             |          |      | 
-| opened        | .opened        | Bool     |         | Valve is opened                            | False   | False   | False        | opened     |             |          |      | 
-| closed        | .closed        | Bool     |         | Valve is closed                            | False   | False   | False        | closed     |             |          |      | 
-| forceActive   | .forceActive   | Bool     |         | Any forcing or safeguarding active         | False   | False   | False        |            |             |          |      | 
-| surpressed    | .surpressed    | Bool     |         | alarms surpressed                          | False   | False   | False        |            |             |          |      | 
+| Name          | Suffix         | DataType | IO Type | Comment                                    | Primary | IsError | Configurable | True Words       | False Words | Loopback | Enum | 
+| ------------- | -------------- | -------- | ------- | ------------------------------------------ | ------- | ------- | ------------ | ---------------- | ----------- | -------- | ---- | 
+| openCommand   | .openCommand   | DO       |         | open command to device                     | False   | False   | False        |                  |             |          |      | 
+| pulseOpen     | .pulseOpen     | Bool     |         | one cycle pulse when starting open command | False   | False   | False        |                  |             |          |      | 
+| pulseClose    | .pulseClose    | Bool     |         | one cycle pulse when ending open command   | False   | False   | False        |                  |             |          |      | 
+| remote        | .remote        | Bool     |         | 0: operator/local, 1: automatic/remote     | False   | False   | False        |                  |             |          |      | 
+| operatorMode  | .operatorMode  | Bool     |         | Operator Mode                              | False   | False   | False        |                  |             |          |      | 
+| automaticMode | .automaticMode | Bool     |         | Automatic Mode                             | False   | False   | False        |                  |             |          |      | 
+| offlineMode   | .offlineMode   | Bool     |         | Offline Mode                               | False   | False   | False        |                  |             |          |      | 
+| outside       | .outside       | Bool     |         | Outside mode                               | False   | False   | False        |                  |             |          |      | 
+| error         | .error         | Bool     |         | Any error active                           | False   | False   | False        |                  |             |          |      | 
+| opened        | .opened        | Bool     |         | Valve is opened                            | False   | False   | False        | opened, isOpen   |             |          |      | 
+| closed        | .closed        | Bool     |         | Valve is closed                            | False   | False   | False        | closed, isClosed |             |          |      | 
+| forceActive   | .forceActive   | Bool     |         | Any forcing or safeguarding active         | False   | False   | False        |                  |             |          |      | 
+| surpressed    | .surpressed    | Bool     |         | alarms surpressed                          | False   | False   | False        |                  |             |          |      | 
 
 
 ## InOuts

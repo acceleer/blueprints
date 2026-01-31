@@ -2,8 +2,15 @@
     "cm-type-package": "./input/cm-type-packages/open-process-library-siemens-tia",
     "design-spec": "./input/design-spec",
     "targets": {
+        "data-structure-demos": {
+            "enable": true,
+            "output-folder": "./output/data-structure-demos",
+            "template-packages": [
+                "./input/template-packages/data-structure-demos"
+            ]
+        },
         "siemens-tia": {
-            "enable": false,
+            "enable": true,
             "output-folder": "./output/siemens-tia",
             "template-packages": [
                 "./input/template-packages/siemens-tia-cm",
@@ -11,7 +18,7 @@
             ]
         },
         "beckhoff-twincat-mtp": {
-            "enable": false,
+            "enable": true,
             "output-folder": "./output/beckhoff-twincat-mtp",
             "template-packages": [
                 "./input/template-packages/beckhoff-twincat-cm",

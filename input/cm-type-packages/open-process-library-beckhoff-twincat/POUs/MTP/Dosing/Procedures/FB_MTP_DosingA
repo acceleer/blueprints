@@ -37,9 +37,12 @@
     <ST>
       <xhtml xmlns="http://www.w3.org/1999/xhtml" >
         <![CDATA[
-// Copy the MTP Service Parameters to the connected Phase Instance:
+// Copy INPUT parameters (Config/Procedure) from MTP Service to Phase Instance:
 Dosing_A.Pressure := Dosing.setPressure.VExt;
 Dosing_A.Temperature := Dosing.setTemperature.VExt;
+
+// Copy REPORT parameters from Phase Instance to MTP Service:
+Dosing.testReportPar.VOut := Dosing_A.TestReportPar;
         ]]>
       </xhtml>
     </ST>

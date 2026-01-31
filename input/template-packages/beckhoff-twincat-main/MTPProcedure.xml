@@ -41,9 +41,14 @@
     <ST>
       <xhtml xmlns="http://www.w3.org/1999/xhtml" >
         <![CDATA[
-// Copy the MTP Service Parameters to the connected Phase Instance:
-{{~ for parameter_link in mtp_procedure.parameter_links ~}}
+// Copy INPUT parameters (Config/Procedure) from MTP Service to Phase Instance:
+{{~ for parameter_link in mtp_procedure.input_parameter_links ~}}
 {{ mtp_procedure.phase_instance.name }}.{{ parameter_link.phase_instance_var_name }} := {{ mtp_service.name }}.{{ parameter_link.mtp_parameter_name }}.VExt;
+{{~ end ~}}
+
+// Copy REPORT parameters from Phase Instance to MTP Service:
+{{~ for parameter_link in mtp_procedure.report_parameter_links ~}}
+{{ mtp_service.name }}.{{ parameter_link.mtp_parameter_name }}.VOut := {{ mtp_procedure.phase_instance.name }}.{{ parameter_link.phase_instance_var_name }};
 {{~ end ~}}
         ]]>
       </xhtml>

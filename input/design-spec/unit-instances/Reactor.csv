@@ -1,3 +1,3 @@
 Name,#,Controller,Unit Type,P&ID Drawing,Process Cell,Area,Comment
-R1000,25,PLC-01,Reactor,ExampleDrawing,,,
+R1000,25,PLC-01,Reactor,ExampleDrawing,Process Cell 1,Area 1,
 
