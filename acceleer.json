@@ -3,7 +3,7 @@
     "design-spec": "./input/design-spec",
     "targets": {
         "siemens-tia": {
-            "enable": true,
+            "enable": false,
             "output-folder": "./output/siemens-tia",
             "template-packages": [
                 "./input/template-packages/siemens-tia-cm",
@@ -11,7 +11,7 @@
             ]
         },
         "beckhoff-twincat-mtp": {
-            "enable": true,
+            "enable": false,
             "output-folder": "./output/beckhoff-twincat-mtp",
             "template-packages": [
                 "./input/template-packages/beckhoff-twincat-cm",
